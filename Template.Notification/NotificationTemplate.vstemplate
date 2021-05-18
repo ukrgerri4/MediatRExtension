@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>MediatR Async Notification</Name>
+    <Description>MediatR async notification template</Description>
+    <Icon>NotificationTemplate.ico</Icon>
+    <TemplateID>a51efd09-c63c-467d-88fe-bc71a8aa0f34</TemplateID>
+    <ProjectType>CSharp</ProjectType>
+    <AppliesTo>CSharp | MediatR</AppliesTo>
+    <RequiredFrameworkVersion>2.0</RequiredFrameworkVersion>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <DefaultName>Class.cs</DefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem SubType="code" ReplaceParameters="true" TargetFileName="$fileinputname$/$fileinputname$Notification.cs" OpenInEditor="true">Templates/Notification.cs</ProjectItem>
+    <ProjectItem SubType="code" ReplaceParameters="true" TargetFileName="$fileinputname$/$fileinputname$NotificationHandler.cs">Templates/NotificationHandler.cs</ProjectItem>
+    <CustomParameters>
+      <CustomParameter Name="$notificationName$" Value="$fileinputname$Notification"/>
+      <CustomParameter Name="$notificationHandlerName$" Value="$fileinputname$NotificationHandler"/>
+    </CustomParameters>
+  </TemplateContent>
+</VSTemplate>

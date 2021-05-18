@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>MediatR Async Query</Name>
+    <Description>MediatR async query template</Description>
+    <Icon>QueryTemplate.ico</Icon>
+    <TemplateID>3096a991-6dcc-4b26-b7f8-44daf40c64ce</TemplateID>
+    <ProjectType>CSharp</ProjectType>
+    <AppliesTo>CSharp | MediatR</AppliesTo>
+    <RequiredFrameworkVersion>2.0</RequiredFrameworkVersion>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <DefaultName>Class.cs</DefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem SubType="code" ReplaceParameters="true" TargetFileName="$fileinputname$/$fileinputname$Query.cs" OpenInEditor="true">Templates/Query.cs</ProjectItem>
+    <ProjectItem SubType="code" ReplaceParameters="true" TargetFileName="$fileinputname$/$fileinputname$QueryHandler.cs">Templates/QueryHandler.cs</ProjectItem>
+    <ProjectItem SubType="code" ReplaceParameters="true" TargetFileName="$fileinputname$/$fileinputname$ViewModel.cs">Templates/ViewModel.cs</ProjectItem>
+    <CustomParameters>
+      <CustomParameter Name="$queryName$" Value="$fileinputname$Query"/>
+      <CustomParameter Name="$queryHandlerName$" Value="$fileinputname$QueryHandler"/>
+      <CustomParameter Name="$queryViewModelName$" Value="$fileinputname$ViewModel"/>
+    </CustomParameters>
+  </TemplateContent>
+</VSTemplate>

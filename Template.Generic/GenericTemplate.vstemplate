@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>MediatR Custom</Name>
+    <Description>MediatR customizable template</Description>
+    <Icon>GenericTemplate.ico</Icon>
+    <TemplateID>76a74807-5e0a-4cf6-80c6-6751ae71ff7a</TemplateID>
+    <ProjectType>CSharp</ProjectType>
+    <AppliesTo>CSharp | MediatR</AppliesTo>
+    <RequiredFrameworkVersion>2.0</RequiredFrameworkVersion>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <DefaultName>Class.cs</DefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem ReplaceParameters="true">Templates/Generic.cs</ProjectItem>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Template.Wizard, Version=1.0.0.0, Culture=neutral, PublicKeyToken=48c7ebd45921bede</Assembly>
+    <FullClassName>Template.Wizard.GenericWizard</FullClassName>
+  </WizardExtension>
+</VSTemplate>
