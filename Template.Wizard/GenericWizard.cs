@@ -19,7 +19,7 @@ namespace GenericTemplateWizard
             WizardRunKind runKind, object[] customParams)
         {
             wizardPage = new WizardWindow();
-            Nullable<bool> dialogCompleted = wizardPage.ShowModal();
+            var dialogCompleted = wizardPage.ShowModal();
 
             if (dialogCompleted == true)
             {
@@ -57,8 +57,36 @@ namespace GenericTemplateWizard
 
         #endregion
 
-        private void PopulateReplacementDictionary(Dictionary<string, string> replacementsDictionary) { 
+        private void PopulateReplacementDictionary(Dictionary<string, string> replacementsDictionary) {
+            // Fill in the replacement values from the UI selections on the wizard page. These values are automatically inserted
+            // into the Elements.xml file for the custom action.
+            string locationValue = (bool)wizardPage.standardMenuRadioButton.IsChecked ?
+                CustomActionLocations.StandardMenu : CustomActionLocations.ListEdit;
+            replacementsDictionary.Add("$LocationValue$", locationValue);
+            replacementsDictionary.Add("$GroupIdValue$", (string)wizardPage.idComboBox.SelectedItem);
+            replacementsDictionary.Add("$IdValue$", Guid.NewGuid().ToString());
 
+            string titleText = DefaultTextBoxStrings.TitleText;
+            if (!String.IsNullOrEmpty(wizardPage.titleTextBox.Text))
+            {
+                titleText = wizardPage.titleTextBox.Text;
+            }
+
+            string descriptionText = DefaultTextBoxStrings.DescriptionText;
+            if (!String.IsNullOrEmpty(wizardPage.descriptionTextBox.Text))
+            {
+                descriptionText = wizardPage.descriptionTextBox.Text;
+            }
+
+            string urlText = DefaultTextBoxStrings.UrlText;
+            if (!String.IsNullOrEmpty(wizardPage.urlTextBox.Text))
+            {
+                urlText = wizardPage.urlTextBox.Text;
+            }
+
+            replacementsDictionary.Add("$TitleValue$", titleText);
+            replacementsDictionary.Add("$DescriptionValue$", descriptionText);
+            replacementsDictionary.Add("$UrlValue$", urlText);
         }
     }
 }

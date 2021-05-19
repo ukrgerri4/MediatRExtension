@@ -65,6 +65,11 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Definitions\FolderFormatType.cs" />
+    <Compile Include="Definitions\ItemType.cs" />
+    <Compile Include="Definitions\PostfixType.cs" />
+    <Compile Include="Definitions\ProcessingType.cs" />
+    <Compile Include="Definitions\FileFormatType.cs" />
     <Compile Include="GenericWizard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -92,5 +97,6 @@
     </None>
     <None Include="WizardKey.snk" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
