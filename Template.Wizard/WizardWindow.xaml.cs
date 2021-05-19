@@ -8,8 +8,10 @@ namespace Template.Wizard
 {
     public partial class WizardWindow : DialogWindow
     {
-        public WizardWindow()
+        public string InputFileName = "";
+        public WizardWindow(string inputFileName = null)
         {
+            InputFileName = string.IsNullOrWhiteSpace(inputFileName) ? "" : inputFileName;
             InitializeComponent();
         }
 

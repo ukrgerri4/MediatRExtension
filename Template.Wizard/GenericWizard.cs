@@ -1,7 +1,9 @@
 ﻿using EnvDTE;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TemplateWizard;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Template.Wizard
 {
@@ -9,8 +11,11 @@ namespace Template.Wizard
     {
         private WizardWindow wizardPage;
 
+        private DTE dte;
+
         public GenericWizard()
         {
+            dte = Package.GetGlobalService(typeof(DTE)) as DTE;
         }
 
         #region IWizard Methods
@@ -18,8 +23,12 @@ namespace Template.Wizard
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary,
             WizardRunKind runKind, object[] customParams)
         {
-            wizardPage = new WizardWindow();
+            replacementsDictionary.TryGetValue("$$", out string inputFileName);
+            wizardPage = new WizardWindow(inputFileName);
             var dialogCompleted = wizardPage.ShowModal();
+
+            var selectedItem = dte.SelectedItems.Item(1);
+            var folder = selectedItem.Name;
 
             if (dialogCompleted == true)
             {
@@ -35,7 +44,7 @@ namespace Template.Wizard
         // that is handled by Visual Studio if the user cancels the wizard.
         public bool ShouldAddProjectItem(string filePath)
         {
-            return true;
+            return false;
         }
 
         // The following IWizard methods are not implemented in this example.
