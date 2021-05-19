@@ -1,71 +1,126 @@
-﻿<ui:DialogWindow x:Class="GenericTemplateWizard.WizardWindow"
+﻿<ui:DialogWindow x:Class="Template.Wizard.WizardWindow"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  Title="MediatR Item Customization Wizard"
-                 Height="500"
+                 Height="600"
                  Width="700"
                  ResizeMode="NoResize"
                  Loaded="Window_Loaded"
                  TextOptions.TextFormattingMode="Display">
-    <Grid>
+    <ui:DialogWindow.Resources>
+        <Style TargetType="Control" x:Key="DefaultLayout">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+    </ui:DialogWindow.Resources>
+    <Grid Background="White" Margin="0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="75*" />
-            <RowDefinition Height="364*" />
-            <RowDefinition Height="1*" />
-            <RowDefinition Height="60*" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Name="headingGrid" Background="White">
-            <Label Grid.Row="0"
-                   Content="Configure the Custom Action"
-                   Name="pageHeaderLabel" HorizontalAlignment="Left"
-                   VerticalAlignment="Center"
-                   Margin="18,0,0,0"
-                   FontWeight="ExtraBold" />
-            <TextBox HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0" Height="23" Width="410" Text=""/>
-        </Grid>
-        <Grid Grid.Row="1" Name="mainGrid">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="20*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="400*" />
-            </Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0" Margin="20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
-                <Label Margin="0,20,0,0" Content="Location:" Name="locationLabel" FontWeight="Bold" />
-                <RadioButton Content="_List Edit" Margin="5,0,0,0" Name="listEditRadioButton"
-                             Checked="listEditRadioButton_Checked" FontWeight="Normal"  />
-                <RadioButton Content="_Standard Menu" Margin="5,5,0,0" Name="standardMenuRadioButton"
-                             Checked="standardMenuRadioButton_Checked" FontWeight="Normal" />
-            </StackPanel>
-            <Label Grid.Row="1" Grid.Column="1" Margin="0,15,0,0" Content="_Group ID:" Name="groupIdLabel"
-                   FontWeight="Bold" Target="{Binding ElementName=idComboBox}" />
-            <ComboBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" Margin="0,15,0,0" Height="23"
-                      Width="253" Name="idComboBox" IsEditable="False" IsSynchronizedWithCurrentItem="True" />
-            <Label Grid.Row="2" Grid.Column="1" Margin="0,15,0,0" Content="_title:" Name="titleLabel"
-                   FontWeight="Bold" Target="{Binding ElementName=titleTextBox}" />
-            <TextBox Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" Margin="0,15,0,0" Height="23"
-                     Name="titleTextBox" Width="410" Text="" />
-            <Label Grid.Row="3" Grid.Column="1" Margin="0,15,0,0" Content="_Description:" Name="descriptionLabel"
-                   FontWeight="Bold" Target="{Binding ElementName=descriptionTextBox}" />
-            <TextBox Grid.Row="3" Grid.Column="2" HorizontalAlignment="Left" Margin="0,15,0,0" Height="23"
-                     Name="descriptionTextBox" Width="410" Text="" />
-            <Label Grid.Row="4" Grid.Column="1" Margin="0,15,0,0" Content="_URL:" Height="28" Name="urlLabel"
-                   FontWeight="Bold" Target="{Binding ElementName=urlTextBox}" />
-            <TextBox Grid.Row="4" Grid.Column="2" HorizontalAlignment="Left" Margin="0,15,0,0" Height="23"
-                     Name="urlTextBox" Width="410" Text="" />
+            <Label Grid.Row="0" Content="Enter item name:" Style="{StaticResource DefaultLayout}" FontWeight="ExtraBold" />
+            <TextBox Grid.Row="1" Text="" Style="{StaticResource DefaultLayout}" Height="23" VerticalContentAlignment="Center" />
         </Grid>
-        <Rectangle Grid.Row="2" Name="separatorRectangle" Fill="White"  />
-        <StackPanel Grid.Row="3" Name="navigationPanel" Orientation="Horizontal">
-            <Button Content="_Finish" Margin="500,0,0,0" Height="25" Name="finishButton" Width="85"
-                    Click="finishButton_Click" IsDefault="True" />
-            <Button Content="Cancel" Margin="10,0,0,0" Height="25" Name="cancelButton" Width="85" IsCancel="True" />
-        </StackPanel>
+
+        <Grid Grid.Row="0" Grid.Column="1" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Content="Choose item type:" Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
+            <ComboBox Grid.Row="1" Style="{StaticResource DefaultLayout}" Height="23">
+                <ComboBoxItem IsSelected="True">
+                    <TextBlock>Command</TextBlock>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <TextBlock>Query</TextBlock>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <TextBlock>Notification</TextBlock>
+                </ComboBoxItem>
+            </ComboBox>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="0" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Content="Processing type:" Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
+            <Grid Grid.Row="1" Margin="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <RadioButton Grid.Column="0" GroupName="ProcessingType" Content="Async" IsChecked="True"
+                             Style="{StaticResource DefaultLayout}" FontWeight="Normal"/>
+                <RadioButton Grid.Column="1" GroupName="ProcessingType" Content="Sync"
+                             Style="{StaticResource DefaultLayout}" FontWeight="Normal"/>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="1" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Content="Folder creation:" Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
+            <Grid Grid.Row="1" Margin="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <RadioButton Grid.Column="0" GroupName="FolderCreationType" Content="Create folder" IsChecked="True"
+                             Style="{StaticResource DefaultLayout}" FontWeight="Normal"/>
+                <RadioButton Grid.Column="1" GroupName="FolderCreationType" Content="Do not create folder"
+                             Style="{StaticResource DefaultLayout}" FontWeight="Normal"/>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Content="Add references:" Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
+            <TextBox Grid.Row="1" Text=""
+                     AcceptsReturn="True"
+                     Style="{StaticResource DefaultLayout}" Height="100"/>
+        </Grid>
+
+        <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Content="Add constructor params:" Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
+            <TextBox Grid.Row="1" Text=""
+                     AcceptsReturn="True"
+                     Style="{StaticResource DefaultLayout}" Height="100"/>
+        </Grid>
+
+        <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <Button Content="Ok" IsDefault="True"
+                    Style="{StaticResource DefaultLayout}" Margin="10" Height="25" Width="85"/>
+                <Button Content="Cancel" IsCancel="True"
+                    Style="{StaticResource DefaultLayout}" Margin="10" Height="25" Width="85"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </ui:DialogWindow>

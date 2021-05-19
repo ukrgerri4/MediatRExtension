@@ -13,8 +13,8 @@
     <ProjectGuid>{E360F371-3425-4F1E-B968-9D253F6E65DB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QueryTemplate</RootNamespace>
-    <AssemblyName>QueryTemplate</AssemblyName>
+    <RootNamespace>Template.QueryAsync</RootNamespace>
+    <AssemblyName>Template.QueryAsync</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>

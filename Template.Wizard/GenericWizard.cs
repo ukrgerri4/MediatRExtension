@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TemplateWizard;
 using System;
 using System.Collections.Generic;
 
-namespace GenericTemplateWizard
+namespace Template.Wizard
 {
     public class GenericWizard : IWizard
     {
@@ -27,7 +27,7 @@ namespace GenericTemplateWizard
             }
             else
             {
-                throw new WizardCancelledException();
+                //throw new WizardCancelledException();
             }
         }
 
@@ -58,35 +58,35 @@ namespace GenericTemplateWizard
         #endregion
 
         private void PopulateReplacementDictionary(Dictionary<string, string> replacementsDictionary) {
-            // Fill in the replacement values from the UI selections on the wizard page. These values are automatically inserted
-            // into the Elements.xml file for the custom action.
-            string locationValue = (bool)wizardPage.standardMenuRadioButton.IsChecked ?
-                CustomActionLocations.StandardMenu : CustomActionLocations.ListEdit;
-            replacementsDictionary.Add("$LocationValue$", locationValue);
-            replacementsDictionary.Add("$GroupIdValue$", (string)wizardPage.idComboBox.SelectedItem);
-            replacementsDictionary.Add("$IdValue$", Guid.NewGuid().ToString());
+            //// Fill in the replacement values from the UI selections on the wizard page. These values are automatically inserted
+            //// into the Elements.xml file for the custom action.
+            //string locationValue = (bool)wizardPage.standardMenuRadioButton.IsChecked ?
+            //    CustomActionLocations.StandardMenu : CustomActionLocations.ListEdit;
+            //replacementsDictionary.Add("$LocationValue$", locationValue);
+            //replacementsDictionary.Add("$GroupIdValue$", (string)wizardPage.idComboBox.SelectedItem);
+            //replacementsDictionary.Add("$IdValue$", Guid.NewGuid().ToString());
 
-            string titleText = DefaultTextBoxStrings.TitleText;
-            if (!String.IsNullOrEmpty(wizardPage.titleTextBox.Text))
-            {
-                titleText = wizardPage.titleTextBox.Text;
-            }
+            //string titleText = DefaultTextBoxStrings.TitleText;
+            //if (!String.IsNullOrEmpty(wizardPage.titleTextBox.Text))
+            //{
+            //    titleText = wizardPage.titleTextBox.Text;
+            //}
 
-            string descriptionText = DefaultTextBoxStrings.DescriptionText;
-            if (!String.IsNullOrEmpty(wizardPage.descriptionTextBox.Text))
-            {
-                descriptionText = wizardPage.descriptionTextBox.Text;
-            }
+            //string descriptionText = DefaultTextBoxStrings.DescriptionText;
+            //if (!String.IsNullOrEmpty(wizardPage.descriptionTextBox.Text))
+            //{
+            //    descriptionText = wizardPage.descriptionTextBox.Text;
+            //}
 
-            string urlText = DefaultTextBoxStrings.UrlText;
-            if (!String.IsNullOrEmpty(wizardPage.urlTextBox.Text))
-            {
-                urlText = wizardPage.urlTextBox.Text;
-            }
+            //string urlText = DefaultTextBoxStrings.UrlText;
+            //if (!String.IsNullOrEmpty(wizardPage.urlTextBox.Text))
+            //{
+            //    urlText = wizardPage.urlTextBox.Text;
+            //}
 
-            replacementsDictionary.Add("$TitleValue$", titleText);
-            replacementsDictionary.Add("$DescriptionValue$", descriptionText);
-            replacementsDictionary.Add("$UrlValue$", urlText);
+            //replacementsDictionary.Add("$TitleValue$", titleText);
+            //replacementsDictionary.Add("$DescriptionValue$", descriptionText);
+            //replacementsDictionary.Add("$UrlValue$", urlText);
         }
     }
 }

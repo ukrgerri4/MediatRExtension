@@ -1,4 +1,4 @@
-﻿namespace GenericTemplateWizard.Definitions
+﻿namespace Template.Wizard.Definitions
 {
     public enum ItemType
     {

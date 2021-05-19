@@ -12,8 +12,8 @@
     <ProjectGuid>{737A7FA8-16DB-4AAE-8AB0-F347937540D0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GenericTemplate</RootNamespace>
-    <AssemblyName>GenericTemplate</AssemblyName>
+    <RootNamespace>Template.Generic</RootNamespace>
+    <AssemblyName>Template.Generic</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>

@@ -14,8 +14,8 @@
     <ProjectGuid>{BEA9DEC2-4D4D-4FE7-9CAC-0573FCF55729}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MediatRTemplates</RootNamespace>
-    <AssemblyName>MediatRTemplates</AssemblyName>
+    <RootNamespace>TemplatesPackage</RootNamespace>
+    <AssemblyName>TemplatesPackage</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>
     <UseCodebase>true</UseCodebase>

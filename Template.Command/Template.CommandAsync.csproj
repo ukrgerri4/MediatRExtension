@@ -13,8 +13,8 @@
     <ProjectGuid>{5A0CF282-CE0A-45F7-AB49-B0E6615E9D9C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CommandTemplate</RootNamespace>
-    <AssemblyName>CommandTemplate</AssemblyName>
+    <RootNamespace>Template.CommandAsync</RootNamespace>
+    <AssemblyName>Template.CommandAsync</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
