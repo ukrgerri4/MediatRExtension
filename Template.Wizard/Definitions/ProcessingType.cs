@@ -2,7 +2,7 @@
 {
     public enum ProcessingType
     {
-        Sync,
-        Async
+        Async,
+        Sync
     }
 }

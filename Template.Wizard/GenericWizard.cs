@@ -23,12 +23,18 @@ namespace Template.Wizard
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary,
             WizardRunKind runKind, object[] customParams)
         {
-            replacementsDictionary.TryGetValue("$$", out string inputFileName);
+            replacementsDictionary.TryGetValue("$safeitemname$", out string inputFileName);
             wizardPage = new WizardWindow(inputFileName);
             var dialogCompleted = wizardPage.ShowModal();
 
             var selectedItem = dte.SelectedItems.Item(1);
             var folder = selectedItem.Name;
+            var t1 = wizardPage.SelectedItemType;
+            var t2 = wizardPage.ProcessingType;
+
+            var t3 = wizardPage.UsingItems;
+            var t4 = wizardPage.ConstructorItems;
+
 
             if (dialogCompleted == true)
             {

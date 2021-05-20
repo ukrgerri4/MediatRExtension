@@ -65,6 +65,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\EnumBooleanConverter.cs" />
     <Compile Include="Definitions\FolderFormatType.cs" />
     <Compile Include="Definitions\ItemType.cs" />
     <Compile Include="Definitions\PostfixType.cs" />
