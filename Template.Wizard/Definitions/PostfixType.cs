@@ -2,8 +2,8 @@
 {
     public enum PostfixType
     {
-        With,
-        Without,
-        Custom
+        Default,    // use request type as postfix
+        None,       // no postfix
+        Custom      // user input postfix
     }
 }

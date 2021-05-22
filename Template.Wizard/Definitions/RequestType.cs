@@ -1,6 +1,6 @@
 ﻿namespace Template.Wizard.Definitions
 {
-    public enum ItemType
+    public enum RequestType
     {
         Query,
         Command,

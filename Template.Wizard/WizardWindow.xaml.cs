@@ -1,12 +1,11 @@
 ﻿using Microsoft.VisualStudio.PlatformUI;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Data;
 using Template.Wizard.Definitions;
+using Template.Wizard.Extensions;
+using Template.Wizard.Models;
 
 namespace Template.Wizard
 {
@@ -14,88 +13,180 @@ namespace Template.Wizard
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public string InputFileName { get; set; }
-
-        public string[] ItemTypes { get; set; }
-
-        public string _selectedItemType;
-        public string SelectedItemType
+        private string _inputFileName;
+        public string InputFileName 
         { 
+            get => _inputFileName;
+            set
+            {
+                _inputFileName = value;
+                OnPropertyChanged(nameof(InputFileName));
+                OnPropertyChanged(nameof(FolderName));
+                OnPropertyChanged(nameof(RequestName));
+                OnPropertyChanged(nameof(RequestHandlerName));
+                OnPropertyChanged(nameof(ViewModelName));
+            }
+        }
+
+        #region RequestType Properties
+
+        public NameValue<RequestType>[] RequestTypes { get; set; }
+        public NameValue<RequestType> _selectedRequestType;
+        public NameValue<RequestType> SelectedRequestType
+        {
             get
             {
-                return _selectedItemType;
+                return _selectedRequestType;
             }
 
             set
             {
-                _selectedItemType = value ?? string.Empty;
-
-                if (PostfixType == PostfixType.With)
+                _selectedRequestType = value;
+                if (SelectedPostfixType?.Value == PostfixType.Default)
                 {
-                    PostfixValue = _selectedItemType;
-                    OnPropertyChanged(nameof(PostfixValue));
+                    InputPostfixValue = _selectedRequestType.Name;
+                    OnPropertyChanged(nameof(InputPostfixValue));
                 }
             }
         }
 
-        public ProcessingType ProcessingType { get; set; }
-        public FolderFormatType FolderFormatType { get; set; }
+        #endregion
 
-        private PostfixType _postfixType;
-        public PostfixType PostfixType {
-            get
-            {
-                return _postfixType;
-            }
+        #region ProsessingType Properties
+
+        public NameValue<ProcessingType>[] ProcessingTypes { get; set; }
+        private NameValue<ProcessingType> _selectedProcessingType;
+        public NameValue<ProcessingType> SelectedProcessingType
+        {
+            get => _selectedProcessingType;
+            set => _selectedProcessingType = value;
+        }
+
+        #endregion
+
+        #region PostfixType Properties
+
+        public NameValue<PostfixType>[] PostfixTypes { get; set; }
+        private NameValue<PostfixType> _selectedPostfixType;
+
+        public NameValue<PostfixType> SelectedPostfixType
+        {
+            get => _selectedPostfixType;
             set
             {
-                _postfixType = value;
-                switch (_postfixType)
+                _selectedPostfixType = value;
+                switch (_selectedPostfixType.Value)
                 {
-                    case PostfixType.With:
-                        PostfixValue = SelectedItemType;
+                    case PostfixType.Default:
+                        InputPostfixValue = SelectedRequestType?.Name ?? string.Empty;
                         break;
-                    case PostfixType.Without:
-                        PostfixValue = "";
+                    case PostfixType.None:
+                        InputPostfixValue = string.Empty;
                         break;
                     case PostfixType.Custom:
                         break;
                 }
                 OnPropertyChanged(nameof(IsCustomPostfix));
-                OnPropertyChanged(nameof(PostfixValue));
+                OnPropertyChanged(nameof(InputPostfixValue));
             }
         }
-        public bool IsCustomPostfix => PostfixType == PostfixType.Custom;
-        public string PostfixValue { get; set; }
+
+        public bool IsCustomPostfix => SelectedPostfixType?.Value == PostfixType.Custom;
+
+        private string _inputPostfixValue;
+        public string InputPostfixValue
+        {
+            get => _inputPostfixValue;
+            set
+            {
+                _inputPostfixValue = value;
+                OnPropertyChanged(nameof(InputPostfixValue));
+                OnPropertyChanged(nameof(FolderName));
+                OnPropertyChanged(nameof(RequestName));
+                OnPropertyChanged(nameof(RequestHandlerName));
+                OnPropertyChanged(nameof(ViewModelName));
+            }
+        }
+
+        #endregion
+
+        #region ResponseType Properties
+        public NameValue<ResponseType>[] ResponseTypes { get; set; }
+        private NameValue<ResponseType> _selectedResponseType;
+        public NameValue<ResponseType> SelectedResponseType
+        {
+            get => _selectedResponseType;
+            set
+            {
+                _selectedResponseType = value;
+            }
+        }
+        #endregion
 
         public string UsingItems { get; set; }
         public string ConstructorItems { get; set; }
 
+        private bool _shouldCreateFolder;
+        public bool ShouldCreateFolder
+        {
+            get => _shouldCreateFolder;
+            set
+            {
+                _shouldCreateFolder = value;
+                OnPropertyChanged(nameof(FolderVisibility));
+            }
+        }
+
+        private bool _oneFileStyle;
+        public bool OneFileStyle
+        {
+            get => _oneFileStyle;
+            set
+            {
+                _oneFileStyle = value;
+                OnPropertyChanged(nameof(OneFileStyle));
+            }
+        }
+        public bool OneClassStyle { get; set; }
+
+        #region Preview Properties
+        public string FolderName => InputFileName;
+        public string FolderVisibility => ShouldCreateFolder ? Visibility.Visible.ToString() : Visibility.Collapsed.ToString();
+        public string RequestName => $"{InputFileName}{InputPostfixValue}.cs";
+        public string RequestHandlerName => $"{InputFileName}{InputPostfixValue}Handler.cs";
+        public string ViewModelName => $"{InputFileName}ViewModel";
+        #endregion
+
         public WizardWindow(string inputFileName = null)
         {
             InitializeComponent();
-            
-            InputFileName = string.IsNullOrWhiteSpace(inputFileName) ? "" : inputFileName;
-            ItemTypes = new string[] {"Command", "Query", "Notification"};
-            SelectedItemType = ItemTypes[0];
 
-            ProcessingType = ProcessingType.Async;
-            FolderFormatType = FolderFormatType.Create;
-            PostfixValue = "";
-            PostfixType = PostfixType.Custom;
+            InputFileName = string.IsNullOrWhiteSpace(inputFileName) ? string.Empty : inputFileName;
+
+            RequestTypes = Enums.ToNameValues<RequestType>().ToArray();
+            SelectedRequestType = RequestTypes.First(x => x.Value == RequestType.Command); // TODO: get from options
+
+            InputPostfixValue = string.Empty;
+            PostfixTypes = Enums.ToNameValues<PostfixType>().ToArray();
+            SelectedPostfixType = PostfixTypes.First(x => x.Value == PostfixType.Default); // TODO: get from options
+
+            ProcessingTypes = Enums.ToNameValues<ProcessingType>().ToArray();
+            SelectedProcessingType = ProcessingTypes.First(x => x.Value == ProcessingType.Async); // TODO: get from options
+
+            ResponseTypes = Enums.ToNameValues<ResponseType>().ToArray();
+            SelectedResponseType = ResponseTypes.First(x => x.Value == ResponseType.Default);
+
+            ShouldCreateFolder = true;
+            OneFileStyle = false;
+            OneClassStyle = false;
+
+            UsingItems = string.Empty;
+            ConstructorItems = string.Empty;
 
             DataContext = this;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void standardMenuRadioButton_Checked(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void listEditRadioButton_Checked(object sender, RoutedEventArgs e)
         {
         }
 
@@ -109,6 +200,21 @@ namespace Template.Wizard
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
+        }
+
+        public UserInput GetUserInputModel()
+        {
+            return new UserInput
+            {
+                InputFileName = InputFileName,
+                RequestType = SelectedRequestType.Name,
+                ProcessingType = SelectedProcessingType.Value,
+                PostfixValue = InputPostfixValue,
+                ReturnValue = "",
+                UsingItems = UsingItems,
+                ConstructorItems = ConstructorItems,
+                ShouldCreateFolder = ShouldCreateFolder
+            };
         }
     }
 }

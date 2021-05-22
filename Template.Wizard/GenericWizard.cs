@@ -1,13 +1,11 @@
 ﻿using EnvDTE;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Shell.Design;
+using EnvDTE80;
+using EnvDTE90;
 using Microsoft.VisualStudio.TemplateWizard;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Linq;
-using EnvDTE80;
+using Template.Wizard.Models;
 
 namespace Template.Wizard
 {
@@ -27,11 +25,8 @@ namespace Template.Wizard
     {
         private WizardWindow wizardPage;
 
-        //private DTE dte;
-
         public GenericWizard()
         {
-            //dte = Package.GetGlobalService(typeof(DTE)) as DTE;
         }
 
         #region IWizard Methods
@@ -39,76 +34,100 @@ namespace Template.Wizard
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary,
             WizardRunKind runKind, object[] customParams)
         {
-            var dte = (_DTE)automationObject as DTE;
-            var solutionService = Package.GetGlobalService(typeof(SVsSolution)) as IVsSolution;
-            var dynamicTypeService = Package.GetGlobalService(typeof(DynamicTypeService)) as DynamicTypeService;
-
-
+            replacementsDictionary.TryGetValue("$safeitemname$", out string inputFileName);
             wizardPage = new WizardWindow(inputFileName);
             var dialogCompleted = wizardPage.ShowModal();
 
-            var selectedItem = dte.SelectedItems.Item(1);
-            var folder = selectedItem.Name;
-            var t1 = wizardPage.SelectedItemType;
-            var t2 = wizardPage.ProcessingType;
+            if (dialogCompleted == true)
+            {
+                var userInput = wizardPage.GetUserInputModel();
+                var dte = (_DTE)automationObject as DTE2;
 
-            var t3 = wizardPage.UsingItems;
-            var t4 = wizardPage.ConstructorItems;
+                SelectedItem selectedItem = null;
+                Project proj = null;
+                if (dte.SelectedItems.Count > 0)
+                {
+                    selectedItem = dte.SelectedItems.Item(1);
+                    proj = null != selectedItem.Project ? selectedItem.Project : selectedItem.ProjectItem.ContainingProject;
+                }
 
+                if (null == proj) return; // add message
+                inputFileName = userInput.InputFileName;
+                var selectedType = userInput.RequestType;
 
-            //IVsHierarchy vsHierarhy;
-            //var solution = solutionService.GetProjectOfUniqueName(selectedItem.Project.FullName, out vsHierarhy);
-            //var disc = dynamicTypeService.GetTypeDiscoveryService(vsHierarhy);
-            //var types = disc.GetTypes(typeof(object), true /*excludeGlobalTypes*/);
-            //var result = new List<Type>();
-            //foreach (Type type in types)
+                var fileExtension = ".cs";
+                var className = $"{inputFileName}{selectedType}";
+                var viewModelName = $"{inputFileName}ViewModel";
+                var handlername = $"{inputFileName}{selectedType}Handler";
+
+                var projItems = selectedItem.ProjectItem?.ProjectItems ?? proj?.ProjectItems;
+                var folderItem = projItems.AddFolder(inputFileName);
+                Solution3 solution = dte.Solution as Solution3;
+                var classTemplate = solution.GetProjectItemTemplate("Class", "CSharp");
+                var requestProjectItem = folderItem.ProjectItems.AddFromTemplate(classTemplate, $"{className}{fileExtension}");
+                var viewModelProjectItem = folderItem.ProjectItems.AddFromTemplate(classTemplate, $"{viewModelName}{fileExtension}");
+                var handlerProjectItem = folderItem.ProjectItems.AddFromTemplate(classTemplate, $"{handlername}{fileExtension}");
+                CodeClass classItem = null;
+                foreach (var codeElement in requestProjectItem.FileCodeModel.CodeElements)
+                {
+                    if (codeElement is CodeNamespace codeNamespace)
+                    {
+                        foreach (var child in codeNamespace.Children)
+                        {
+                            if (child is CodeClass codeClass && codeClass.Name == className)
+                            {
+                                classItem = codeClass;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (null == classItem) { return; } // add message
+
+                // add using
+                var folderEditPoint = requestProjectItem.FileCodeModel.CodeElements.Item(1).GetStartPoint().CreateEditPoint();
+                folderEditPoint.Insert($"using MediatR;{Environment.NewLine}");
+                if (!string.IsNullOrWhiteSpace(userInput.UsingItems))
+                {
+                    var usings = string.Join(
+                        Environment.NewLine,
+                        userInput.UsingItems
+                            .Replace($"{Environment.NewLine}", "")
+                            .Split(';')
+                            .Where(x => !string.IsNullOrWhiteSpace(x))
+                            .Select(x => $"using {x.Trim(' ')};")
+                    );
+                    folderEditPoint.Insert(usings);
+                    folderEditPoint.Insert(Environment.NewLine);
+                }
+
+                // make public
+                classItem.Access = vsCMAccess.vsCMAccessPublic;
+
+                // add interface
+                var editPoint = classItem.StartPoint.CreateEditPoint();
+                editPoint.EndOfLine();
+                editPoint.Insert(selectedType == "Notification" ? " : INotification" : " : IRequest");
+                editPoint.Insert($"<{viewModelName}>");
+
+                requestProjectItem.Save();
+                proj.Save();
+            }
+
+            // return type?
+
+            //var imports = classProjectItem.FileCodeModel.CodeElements.OfType<CodeImport>().ToList();
+            //if (imports.Any())
             //{
-            //    if (type.IsPublic)
-            //    {
-            //        if (!result.Contains(type))
-            //            result.Add(type);
-            //    }
+            //    imports.Last().GetEndPoint().CreateEditPoint().Insert("\nusing MediatR;;\nusing blblb2;");
             //}
 
-            var i = GetProjectItemsClasses(selectedItem.Project.ProjectItems);
+            //{6BB5F8EF-4483-11D3-8BCF-00C04F8EC28C}
+            //EnvDTE.Constants.vsProjectItemKindPhysicalFolder
 
-            //var items = GetProjectItems(selectedItem.Project.ProjectItems);
-            //var migr = new List<Migration>();
-            //foreach (var c in items)
-            //{
-            //    var eles = c.FileCodeModel;
-            //    if (eles == null)
-            //        continue;
-            //    foreach (var ele in eles.CodeElements)
-            //    {
-            //        var x = ele is CodeElement;
-            //        var x1 = ele is CodeClass;
-
-            //        if (ele is EnvDTE.CodeNamespace)
-            //        {
-            //            var ns = ele as EnvDTE.CodeNamespace;
-            //            // run through classes
-            //            foreach (var property in ns.Members)
-            //            {
-            //                var member = property as CodeType;
-            //                if (member == null)
-            //                    continue;
-            //                if (member.IsCodeType && member.Kind == vsCMElement.vsCMElementClass)
-            //                    migr.Add(new Migration(member));
-
-            //                //foreach (var d in member.Bases)
-            //                //{
-            //                //    var dClass = d as CodeClass;
-            //                //    if (dClass == null)
-            //                //        continue;
-
-            //                //    var name = member.Name;
-            //                //    migr.Add(new Migration(member));
-            //                //}
-            //            }
-            //        }
-            //    }
-            //}
+            /* To get all classes in project */
+            //var projectItems = selectedItem.Project.ProjectItems.GetAllProjectItems();
+            //var classes = GetAllClasses(projectItems);
         }
 
         // Always return true; this IWizard implementation throws a WizardCancelledException
@@ -169,76 +188,58 @@ namespace Template.Wizard
             //replacementsDictionary.Add("$UrlValue$", urlText);
         }
 
-        public IEnumerable<ProjectItem> GetProjectItems(EnvDTE.ProjectItems projectItems)
+        private List<Migration> GetAllClasses(IEnumerable<ProjectItem> projectItems)
         {
-            foreach (EnvDTE.ProjectItem item in projectItems)
+            var migrations = new List<Migration>();
+            foreach (var projectItem in projectItems)
             {
-                yield return item;
-
-                if (item.SubProject != null)
+                var fileCodeModel = projectItem.FileCodeModel;
+                if (fileCodeModel == null)
+                    continue;
+                foreach (var codeElement in fileCodeModel.CodeElements)
                 {
-                    foreach (EnvDTE.ProjectItem childItem in GetProjectItems(item.SubProject.ProjectItems))
-                        yield return childItem;
-                }
-                else
-                {
-                    foreach (EnvDTE.ProjectItem childItem in GetProjectItems(item.ProjectItems))
-                        yield return childItem;
-                }
-            }
-
-        }
-
-        //public ProjectItem GetProjectsClasses(Projects projects)
-        //{
-        //    foreach (Project proj in projects)
-        //    {
-        //        foreach(ProjectItem item in proj.ProjectItems)
-        //        {
-        //            if (item.Name.Contains(".cs") && null != item.FileCodeModel)
-        //            {
-
-        //            }
-        //            else
-        //            {
-
-        //            }
-        //        }
-        //    }
-
-        //}
-
-        public List<string> GetProjectItemsClasses(ProjectItems projectItems)
-        {
-            var result = new List<string>();
-            foreach (ProjectItem item in projectItems)
-            {
-                if (item.Name.Contains(".cs") && null != item.FileCodeModel && item.FileCodeModel.Language == CodeModelLanguageConstants.vsCMLanguageCSharp)
-                {
-                    foreach (var codeElement in item.FileCodeModel.CodeElements)
+                    if (codeElement is CodeNamespace)
                     {
-                        if (codeElement is CodeNamespace codeNamespace)
+                        var ns = codeElement as CodeNamespace;
+                        // run through classes
+                        foreach (var member in ns.Members)
                         {
-                            foreach (var property in codeNamespace.Members)
+                            var codeType = member as CodeType;
+                            if (codeType == null)
+                                continue;
+
+                            foreach (var baseClass in codeType.Bases)
                             {
-                                if (property is CodeType member && member.IsCodeType && member.Kind == vsCMElement.vsCMElementClass)
-                                {
-                                    result.Add(member.Name);
-                                }
+                                var dClass = baseClass as CodeClass;
+                                if (dClass == null)
+                                    continue;
+
+                                migrations.Add(new Migration(codeType));
                             }
                         }
                     }
                 }
-                else if (item.SubProject != null)
-                {
-                    result = GetProjectItemsClasses(item.SubProject.ProjectItems);
-                }
-                else
-                {
-                    result = GetProjectItemsClasses(item.ProjectItems);
-                }
             }
-            return result;
+            return migrations;
+        }
+
+        private void GetAllClassesFromSolution()
+        {
+            //var solutionService = Package.GetGlobalService(typeof(SVsSolution)) as IVsSolution;
+            //var dynamicTypeService = Package.GetGlobalService(typeof(DynamicTypeService)) as DynamicTypeService;
+            //IVsHierarchy vsHierarhy;
+            //var solution = solutionService.GetProjectOfUniqueName(selectedItem.Project.FullName, out vsHierarhy);
+            //var disc = dynamicTypeService.GetTypeDiscoveryService(vsHierarhy);
+            //var types = disc.GetTypes(typeof(object), true /*excludeGlobalTypes*/);
+            //var result = new List<Type>();
+            //foreach (Type type in types)
+            //{
+            //    if (type.IsPublic)
+            //    {
+            //        if (!result.Contains(type))
+            //            result.Add(type);
+            //    }
+            //}
         }
     }
 }
