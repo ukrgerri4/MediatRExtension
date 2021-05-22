@@ -7,7 +7,8 @@
                  Width="700"
                  ResizeMode="NoResize"
                  Loaded="Window_Loaded"
-                 TextOptions.TextFormattingMode="Display">
+                 TextOptions.TextFormattingMode="Display"
+                 Background="White">
 
     <ui:DialogWindow.Resources>
         <Style TargetType="Control" x:Key="DefaultLayout">
@@ -26,7 +27,7 @@
         
     </ui:DialogWindow.Resources>
 
-    <Grid Background="White" Margin="0">
+    <Grid Background="White" Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
@@ -41,8 +42,7 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="5" Margin="10">
-            <!--<Border BorderThickness="1" BorderBrush="Black" Background="#F8F9F9">-->
+        <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="5" Margin="5">
             <GroupBox Header="Generating Files Preview" FontWeight="Bold">
                 <StackPanel Grid.Row="1" Orientation="Vertical"
                            VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5,0,0,0">
@@ -54,20 +54,19 @@
                         <Image Source="Assets/CSharp.png" Style="{StaticResource IconStyle}"/>
                         <TextBlock Text="{Binding RequestName}"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding RequestHandlerNameVisibility}" Margin="10,0,0,0">
                         <Image Source="Assets/CSharp.png" Style="{StaticResource IconStyle}"/>
                         <TextBlock Text="{Binding RequestHandlerName}"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding ViewModelNameVisibility}" Margin="10,0,0,0">
                         <Image Source="Assets/CSharp.png" Style="{StaticResource IconStyle}"/>
                         <TextBlock Text="{Binding ViewModelName}"/>
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
-            <!--</Border>-->
         </Grid>
         
-        <Grid Grid.Row="0" Grid.Column="0" Margin="10">
+        <Grid Grid.Row="0" Grid.Column="0" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="120"/>
                 <ColumnDefinition Width="*"/>
@@ -90,7 +89,7 @@
             </ComboBox>
         </Grid>
 
-        <Grid Grid.Row="1" Grid.Column="0" Margin="10">
+        <Grid Grid.Row="1" Grid.Column="0" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="120"/>
                 <ColumnDefinition Width="*"/>
@@ -113,18 +112,22 @@
             </ComboBox>
         </Grid>
 
-        <Grid Grid.Row="2" Grid.Column="0" Margin="10">
+        <Grid Grid.Row="2" Grid.Column="0" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0" Content="Postfix type:"
+            <Grid Grid.Row="0" Margin="0,0,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0"  Content="Postfix type:"
                    Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
-            <ComboBox Grid.Row="0" Grid.Column="1"
+                <Separator Grid.Column="1" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            </Grid>
+            <ComboBox Grid.Row="1"
                    ItemsSource="{Binding PostfixTypes}"
                    SelectedItem="{Binding SelectedPostfixType}"
                    Style="{StaticResource DefaultLayout}"
@@ -138,24 +141,28 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+            <TextBox Grid.Row="2"
                      Text="{Binding InputPostfixValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      IsEnabled="{Binding IsCustomPostfix}"
                      Height="25" Width="200" Margin="0,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
         </Grid>
 
-        <Grid Grid.Row="3" Grid.Column="0" Margin="10">
+        <Grid Grid.Row="3" Grid.Column="0" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Content="Return value type:"
+            <Grid Grid.Row="0" Margin="0,0,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0"  Content="Response value type:"
                    Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
-            <ComboBox Grid.Row="0" Grid.Column="1"
+                <Separator Grid.Column="1" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            </Grid>
+            <ComboBox Grid.Row="1"
                    ItemsSource="{Binding ResponseTypes}"
                    SelectedItem="{Binding SelectedResponseType}"
                    Style="{StaticResource DefaultLayout}"
@@ -169,20 +176,28 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                     Text="{Binding InputPostfixValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     IsEnabled="{Binding IsCustomPostfix}"
+            <TextBox Grid.Row="2"
+                     Text="{Binding InputReturnValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     IsEnabled="{Binding IsCustomReturnValue}"
                      Height="25" Width="200" Margin="0,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
         </Grid>
 
-        <Grid Grid.Row="4" Grid.Column="0" Margin="10">
+        <Grid Grid.Row="4" Grid.Column="0" Margin="5">
             <Grid.RowDefinitions>
-                <RowDefinition Height="1*" />
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
-            <Label Grid.Row="0" Content="Additional adjustments:" Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
+            <Grid Grid.Row="0" Margin="0,0,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0"  Content="Additional adjustments:"
+                   Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
+                <Separator Grid.Column="1" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            </Grid>
             <CheckBox Grid.Row="1" Content="Create folder"
                       IsChecked="{Binding ShouldCreateFolder, Mode=TwoWay}"/>
             <CheckBox Grid.Row="2" Content="Request and handler in one file"
@@ -192,7 +207,7 @@
                       IsEnabled="{Binding OneFileStyle}"/>
         </Grid>
 
-        <Grid Grid.Row="5" Grid.Column="0" Margin="10">
+        <Grid Grid.Row="5" Grid.Column="0" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*" />
                 <RowDefinition Height="1*" />
@@ -204,7 +219,7 @@
                      Style="{StaticResource DefaultLayout}" Height="100"/>
         </Grid>
 
-        <Grid Grid.Row="5" Grid.Column="1" Margin="10">
+        <Grid Grid.Row="5" Grid.Column="1" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*" />
                 <RowDefinition Height="1*" />

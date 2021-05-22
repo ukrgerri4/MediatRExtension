@@ -3,6 +3,7 @@
     public enum ResponseType
     {
         Default,
+        None,
         Custom
     }
 }

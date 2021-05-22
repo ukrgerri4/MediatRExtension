@@ -13,6 +13,7 @@ namespace Template.Wizard
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        #region InputFileName Properties
         private string _inputFileName;
         public string InputFileName 
         { 
@@ -27,6 +28,7 @@ namespace Template.Wizard
                 OnPropertyChanged(nameof(ViewModelName));
             }
         }
+        #endregion
 
         #region RequestType Properties
 
@@ -47,6 +49,7 @@ namespace Template.Wizard
                     InputPostfixValue = _selectedRequestType.Name;
                     OnPropertyChanged(nameof(InputPostfixValue));
                 }
+                OnPropertyChanged(nameof(ViewModelNameVisibility));
             }
         }
 
@@ -119,6 +122,35 @@ namespace Template.Wizard
             set
             {
                 _selectedResponseType = value;
+                switch (_selectedPostfixType.Value)
+                {
+                    case PostfixType.Default:
+                        if (SelectedRequestType?.Value == RequestType.Query)
+                        {
+                            InputReturnValue = ViewModelName;
+                        }
+                        break;
+                    case PostfixType.None:
+                        InputReturnValue = string.Empty;
+                        break;
+                    case PostfixType.Custom:
+                        break;
+                }
+                OnPropertyChanged(nameof(ViewModelNameVisibility));
+                OnPropertyChanged(nameof(IsCustomReturnValue));
+                OnPropertyChanged(nameof(InputReturnValue));
+            }
+        }
+
+        public bool IsCustomReturnValue => SelectedResponseType?.Value == ResponseType.Custom;
+
+        private string _inputReturnValue;
+        public string InputReturnValue
+        {
+            get => _inputReturnValue;
+            set
+            {
+                _inputReturnValue = value;
             }
         }
         #endregion
@@ -145,6 +177,7 @@ namespace Template.Wizard
             {
                 _oneFileStyle = value;
                 OnPropertyChanged(nameof(OneFileStyle));
+                OnPropertyChanged(nameof(RequestHandlerNameVisibility));
             }
         }
         public bool OneClassStyle { get; set; }
@@ -154,7 +187,15 @@ namespace Template.Wizard
         public string FolderVisibility => ShouldCreateFolder ? Visibility.Visible.ToString() : Visibility.Collapsed.ToString();
         public string RequestName => $"{InputFileName}{InputPostfixValue}.cs";
         public string RequestHandlerName => $"{InputFileName}{InputPostfixValue}Handler.cs";
+        public string RequestHandlerNameVisibility => OneFileStyle ? Visibility.Collapsed.ToString() : Visibility.Visible.ToString();
         public string ViewModelName => $"{InputFileName}ViewModel";
+
+        // create view model only if request is query or command and default return type
+        public string ViewModelNameVisibility => 
+            (SelectedRequestType?.Value == RequestType.Query || SelectedRequestType?.Value == RequestType.Command) && SelectedResponseType?.Value == ResponseType.Default
+                ? Visibility.Visible.ToString()
+                : Visibility.Collapsed.ToString();
+
         #endregion
 
         public WizardWindow(string inputFileName = null)
