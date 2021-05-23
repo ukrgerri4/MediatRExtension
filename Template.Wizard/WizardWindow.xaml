@@ -60,7 +60,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Visibility="{Binding ViewModelNameVisibility}" Margin="10,0,0,0">
                         <Image Source="Assets/CSharp.png" Style="{StaticResource IconStyle}"/>
-                        <TextBlock Text="{Binding ViewModelName}"/>
+                        <TextBlock Text="{Binding InputReturnValue}"/>
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
@@ -163,8 +163,9 @@
                 <Separator Grid.Column="1" VerticalAlignment="Center" Margin="5,0,0,0"/>
             </Grid>
             <ComboBox Grid.Row="1"
+                   IsEnabled="{Binding IsResponseTypeComboBoxEnabled}"
                    ItemsSource="{Binding ResponseTypes}"
-                   SelectedItem="{Binding SelectedResponseType}"
+                   SelectedItem="{Binding SelectedResponseType, Mode=TwoWay}"
                    Style="{StaticResource DefaultLayout}"
                    VerticalContentAlignment="Center"
                    HorizontalAlignment="Left"

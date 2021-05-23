@@ -13,6 +13,8 @@ namespace Template.Wizard
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private const string VIEW_MODEL = "ViewModel";
+
         #region InputFileName Properties
         private string _inputFileName;
         public string InputFileName 
@@ -20,12 +22,18 @@ namespace Template.Wizard
             get => _inputFileName;
             set
             {
+                var oldValue = _inputFileName;
+
                 _inputFileName = value;
                 OnPropertyChanged(nameof(InputFileName));
                 OnPropertyChanged(nameof(FolderName));
                 OnPropertyChanged(nameof(RequestName));
                 OnPropertyChanged(nameof(RequestHandlerName));
-                OnPropertyChanged(nameof(ViewModelName));
+
+                if (InputReturnValue?.Trim() == GetViewModelName(oldValue))
+                {
+                    InputReturnValue = DefaultViewModelName;
+                }
             }
         }
         #endregion
@@ -44,12 +52,29 @@ namespace Template.Wizard
             set
             {
                 _selectedRequestType = value;
+
+                switch(_selectedRequestType.Value)
+                {
+                    case RequestType.Query:
+                        // TODO: check id SelectedResponseType is not ResponseType.ExistingType
+                        SelectedResponseType = ResponseTypes.First(x => x.Value == ResponseType.NewItem);
+                        OnPropertyChanged(nameof(SelectedResponseType));
+                        break;
+                    case RequestType.Command:
+                        break;
+                    case RequestType.Notification:
+                        SelectedResponseType = ResponseTypes.First(x => x.Value == ResponseType.None);
+                        OnPropertyChanged(nameof(SelectedResponseType));
+                        break;
+                }
+
                 if (SelectedPostfixType?.Value == PostfixType.Default)
                 {
                     InputPostfixValue = _selectedRequestType.Name;
                     OnPropertyChanged(nameof(InputPostfixValue));
                 }
-                OnPropertyChanged(nameof(ViewModelNameVisibility));
+
+                OnPropertyChanged(nameof(IsResponseTypeComboBoxEnabled));
             }
         }
 
@@ -107,7 +132,7 @@ namespace Template.Wizard
                 OnPropertyChanged(nameof(FolderName));
                 OnPropertyChanged(nameof(RequestName));
                 OnPropertyChanged(nameof(RequestHandlerName));
-                OnPropertyChanged(nameof(ViewModelName));
+                OnPropertyChanged(nameof(InputReturnValue));
             }
         }
 
@@ -122,18 +147,15 @@ namespace Template.Wizard
             set
             {
                 _selectedResponseType = value;
-                switch (_selectedPostfixType.Value)
+                switch (_selectedResponseType.Value)
                 {
-                    case PostfixType.Default:
-                        if (SelectedRequestType?.Value == RequestType.Query)
-                        {
-                            InputReturnValue = ViewModelName;
-                        }
-                        break;
-                    case PostfixType.None:
+                    case ResponseType.None:
                         InputReturnValue = string.Empty;
                         break;
-                    case PostfixType.Custom:
+                    case ResponseType.NewItem:
+                        InputReturnValue = DefaultViewModelName;
+                        break;
+                    case ResponseType.ExistingItem:
                         break;
                 }
                 OnPropertyChanged(nameof(ViewModelNameVisibility));
@@ -142,7 +164,9 @@ namespace Template.Wizard
             }
         }
 
-        public bool IsCustomReturnValue => SelectedResponseType?.Value == ResponseType.Custom;
+        public bool IsResponseTypeComboBoxEnabled => SelectedRequestType?.Value != RequestType.Notification;
+
+        public bool IsCustomReturnValue => SelectedResponseType?.Value != ResponseType.None;
 
         private string _inputReturnValue;
         public string InputReturnValue
@@ -151,6 +175,7 @@ namespace Template.Wizard
             set
             {
                 _inputReturnValue = value;
+                OnPropertyChanged(nameof(InputReturnValue));
             }
         }
         #endregion
@@ -188,11 +213,10 @@ namespace Template.Wizard
         public string RequestName => $"{InputFileName}{InputPostfixValue}.cs";
         public string RequestHandlerName => $"{InputFileName}{InputPostfixValue}Handler.cs";
         public string RequestHandlerNameVisibility => OneFileStyle ? Visibility.Collapsed.ToString() : Visibility.Visible.ToString();
-        public string ViewModelName => $"{InputFileName}ViewModel";
+        public string DefaultViewModelName => GetViewModelName(InputFileName);
 
-        // create view model only if request is query or command and default return type
         public string ViewModelNameVisibility => 
-            (SelectedRequestType?.Value == RequestType.Query || SelectedRequestType?.Value == RequestType.Command) && SelectedResponseType?.Value == ResponseType.Default
+            SelectedResponseType?.Value == ResponseType.NewItem
                 ? Visibility.Visible.ToString()
                 : Visibility.Collapsed.ToString();
 
@@ -202,6 +226,7 @@ namespace Template.Wizard
         {
             InitializeComponent();
 
+            InputReturnValue = string.Empty;
             InputFileName = string.IsNullOrWhiteSpace(inputFileName) ? string.Empty : inputFileName;
 
             RequestTypes = Enums.ToNameValues<RequestType>().ToArray();
@@ -215,7 +240,7 @@ namespace Template.Wizard
             SelectedProcessingType = ProcessingTypes.First(x => x.Value == ProcessingType.Async); // TODO: get from options
 
             ResponseTypes = Enums.ToNameValues<ResponseType>().ToArray();
-            SelectedResponseType = ResponseTypes.First(x => x.Value == ResponseType.Default);
+            SelectedResponseType = ResponseTypes.First(x => x.Value == ResponseType.None);
 
             ShouldCreateFolder = true;
             OneFileStyle = false;
@@ -225,6 +250,11 @@ namespace Template.Wizard
             ConstructorItems = string.Empty;
 
             DataContext = this;
+        }
+
+        private string GetViewModelName(string input)
+        {
+            return $"{input}{VIEW_MODEL}";
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

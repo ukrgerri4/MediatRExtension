@@ -2,8 +2,8 @@
 {
     public enum ResponseType
     {
-        Default,
         None,
-        Custom
+        NewItem,
+        ExistingItem
     }
 }
