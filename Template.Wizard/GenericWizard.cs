@@ -1,11 +1,6 @@
 ﻿using EnvDTE;
-using EnvDTE80;
-using EnvDTE90;
 using Microsoft.VisualStudio.TemplateWizard;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using Template.Wizard.Models;
 
 namespace Template.Wizard
 {
@@ -38,81 +33,81 @@ namespace Template.Wizard
             wizardPage = new WizardWindow(inputFileName);
             var dialogCompleted = wizardPage.ShowModal();
 
-            if (dialogCompleted == true)
-            {
-                var userInput = wizardPage.GetUserInputModel();
-                var dte = (_DTE)automationObject as DTE2;
+            //if (dialogCompleted == true)
+            //{
+            //    var userInput = wizardPage.GetUserInputModel();
+            //    var dte = (_DTE)automationObject as DTE2;
 
-                SelectedItem selectedItem = null;
-                Project proj = null;
-                if (dte.SelectedItems.Count > 0)
-                {
-                    selectedItem = dte.SelectedItems.Item(1);
-                    proj = null != selectedItem.Project ? selectedItem.Project : selectedItem.ProjectItem.ContainingProject;
-                }
+            //    SelectedItem selectedItem = null;
+            //    Project proj = null;
+            //    if (dte.SelectedItems.Count > 0)
+            //    {
+            //        selectedItem = dte.SelectedItems.Item(1);
+            //        proj = null != selectedItem.Project ? selectedItem.Project : selectedItem.ProjectItem.ContainingProject;
+            //    }
 
-                if (null == proj) return; // add message
-                inputFileName = userInput.InputFileName;
-                var selectedType = userInput.RequestType;
+            //    if (null == proj) return; // add message
+            //    inputFileName = userInput.InputFileName;
+            //    var selectedType = userInput.RequestType;
 
-                var fileExtension = ".cs";
-                var className = $"{inputFileName}{selectedType}";
-                var viewModelName = $"{inputFileName}ViewModel";
-                var handlername = $"{inputFileName}{selectedType}Handler";
+            //    var fileExtension = ".cs";
+            //    var className = $"{inputFileName}{selectedType}";
+            //    var viewModelName = $"{inputFileName}ViewModel";
+            //    var handlername = $"{inputFileName}{selectedType}Handler";
 
-                var projItems = selectedItem.ProjectItem?.ProjectItems ?? proj?.ProjectItems;
-                var folderItem = projItems.AddFolder(inputFileName);
-                Solution3 solution = dte.Solution as Solution3;
-                var classTemplate = solution.GetProjectItemTemplate("Class", "CSharp");
-                var requestProjectItem = folderItem.ProjectItems.AddFromTemplate(classTemplate, $"{className}{fileExtension}");
-                var viewModelProjectItem = folderItem.ProjectItems.AddFromTemplate(classTemplate, $"{viewModelName}{fileExtension}");
-                var handlerProjectItem = folderItem.ProjectItems.AddFromTemplate(classTemplate, $"{handlername}{fileExtension}");
-                CodeClass classItem = null;
-                foreach (var codeElement in requestProjectItem.FileCodeModel.CodeElements)
-                {
-                    if (codeElement is CodeNamespace codeNamespace)
-                    {
-                        foreach (var child in codeNamespace.Children)
-                        {
-                            if (child is CodeClass codeClass && codeClass.Name == className)
-                            {
-                                classItem = codeClass;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (null == classItem) { return; } // add message
+            //    var projItems = selectedItem.ProjectItem?.ProjectItems ?? proj?.ProjectItems;
+            //    var folderItem = projItems.AddFolder(inputFileName);
+            //    Solution3 solution = dte.Solution as Solution3;
+            //    var classTemplate = solution.GetProjectItemTemplate("Class", "CSharp");
+            //    var requestProjectItem = folderItem.ProjectItems.AddFromTemplate(classTemplate, $"{className}{fileExtension}");
+            //    var viewModelProjectItem = folderItem.ProjectItems.AddFromTemplate(classTemplate, $"{viewModelName}{fileExtension}");
+            //    var handlerProjectItem = folderItem.ProjectItems.AddFromTemplate(classTemplate, $"{handlername}{fileExtension}");
+            //    CodeClass classItem = null;
+            //    foreach (var codeElement in requestProjectItem.FileCodeModel.CodeElements)
+            //    {
+            //        if (codeElement is CodeNamespace codeNamespace)
+            //        {
+            //            foreach (var child in codeNamespace.Children)
+            //            {
+            //                if (child is CodeClass codeClass && codeClass.Name == className)
+            //                {
+            //                    classItem = codeClass;
+            //                    break;
+            //                }
+            //            }
+            //        }
+            //    }
+            //    if (null == classItem) { return; } // add message
 
-                // add using
-                var folderEditPoint = requestProjectItem.FileCodeModel.CodeElements.Item(1).GetStartPoint().CreateEditPoint();
-                folderEditPoint.Insert($"using MediatR;{Environment.NewLine}");
-                if (!string.IsNullOrWhiteSpace(userInput.UsingItems))
-                {
-                    var usings = string.Join(
-                        Environment.NewLine,
-                        userInput.UsingItems
-                            .Replace($"{Environment.NewLine}", "")
-                            .Split(';')
-                            .Where(x => !string.IsNullOrWhiteSpace(x))
-                            .Select(x => $"using {x.Trim(' ')};")
-                    );
-                    folderEditPoint.Insert(usings);
-                    folderEditPoint.Insert(Environment.NewLine);
-                }
+            //    // add using
+            //    var folderEditPoint = requestProjectItem.FileCodeModel.CodeElements.Item(1).GetStartPoint().CreateEditPoint();
+            //    folderEditPoint.Insert($"using MediatR;{Environment.NewLine}");
+            //    if (!string.IsNullOrWhiteSpace(userInput.UsingItems))
+            //    {
+            //        var usings = string.Join(
+            //            Environment.NewLine,
+            //            userInput.UsingItems
+            //                .Replace($"{Environment.NewLine}", "")
+            //                .Split(';')
+            //                .Where(x => !string.IsNullOrWhiteSpace(x))
+            //                .Select(x => $"using {x.Trim(' ')};")
+            //        );
+            //        folderEditPoint.Insert(usings);
+            //        folderEditPoint.Insert(Environment.NewLine);
+            //    }
 
-                // make public
-                classItem.Access = vsCMAccess.vsCMAccessPublic;
+            //    // make public
+            //    classItem.Access = vsCMAccess.vsCMAccessPublic;
 
-                // add interface
-                var editPoint = classItem.StartPoint.CreateEditPoint();
-                editPoint.EndOfLine();
-                editPoint.Insert(selectedType == "Notification" ? " : INotification" : " : IRequest");
-                editPoint.Insert($"<{viewModelName}>");
+            //    // add interface
+            //    var editPoint = classItem.StartPoint.CreateEditPoint();
+            //    editPoint.EndOfLine();
+            //    editPoint.Insert(selectedType == "Notification" ? " : INotification" : " : IRequest");
+            //    editPoint.Insert($"<{viewModelName}>");
 
-                requestProjectItem.Save();
-                proj.Save();
-            }
+            //    requestProjectItem.Save();
+            //    proj.Save();
+            //}
 
             // return type?
 

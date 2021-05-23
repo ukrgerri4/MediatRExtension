@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.NotificationAsync"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Wizard", "Template.Wizard\Template.Wizard.csproj", "{4AA956F5-7A1C-42A1-AA3D-7C3399D56F6F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Templates.View", "Templates.View\Templates.View.csproj", "{3C624FC9-9D33-42E0-B66F-A98810C261F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{4AA956F5-7A1C-42A1-AA3D-7C3399D56F6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4AA956F5-7A1C-42A1-AA3D-7C3399D56F6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4AA956F5-7A1C-42A1-AA3D-7C3399D56F6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C624FC9-9D33-42E0-B66F-A98810C261F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C624FC9-9D33-42E0-B66F-A98810C261F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C624FC9-9D33-42E0-B66F-A98810C261F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C624FC9-9D33-42E0-B66F-A98810C261F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

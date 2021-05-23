@@ -1,14 +1,28 @@
 ﻿using EnvDTE;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Template.Wizard.Extensions
+namespace TemplatesPackage.Extensions
 {
     public static class ProjectItemsExtensions
     {
+        public static CodeClass FindCodeClassByName(this ProjectItem projectItem, string className)
+        {
+            foreach (var codeElement in projectItem.FileCodeModel.CodeElements)
+            {
+                if (codeElement is CodeNamespace codeNamespace)
+                {
+                    foreach (var child in codeNamespace.Children)
+                    {
+                        if (child is CodeClass codeClass && codeClass.Name == className)
+                        {
+                            return codeClass;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         public static IEnumerable<ProjectItem> GetAllProjectItems(this ProjectItems projectItems)
         {
             foreach (ProjectItem item in projectItems)

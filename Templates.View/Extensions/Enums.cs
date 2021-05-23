@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Template.Wizard.Models;
+using Templates.View.Models;
 
-namespace Template.Wizard.Extensions
+namespace Templates.View.Extensions
 {
     public static class Enums
     {

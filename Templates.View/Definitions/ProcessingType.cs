@@ -1,4 +1,4 @@
-﻿namespace Template.Wizard.Definitions
+﻿namespace Templates.View.Definitions
 {
     public enum ProcessingType
     {

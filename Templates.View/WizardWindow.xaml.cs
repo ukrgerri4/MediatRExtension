@@ -3,9 +3,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using Template.Wizard.Definitions;
-using Template.Wizard.Extensions;
-using Template.Wizard.Models;
+using Templates.View.Definitions;
+using Templates.View.Extensions;
+using Templates.View.Models;
 
 namespace Template.Wizard
 {
@@ -14,8 +14,10 @@ namespace Template.Wizard
         public event PropertyChangedEventHandler PropertyChanged;
 
         private const string VIEW_MODEL = "ViewModel";
+        public string DefaultViewModelName => GetViewModelName(InputFileName);
 
         #region InputFileName Properties
+
         private string _inputFileName;
         public string InputFileName 
         { 
@@ -30,12 +32,14 @@ namespace Template.Wizard
                 OnPropertyChanged(nameof(RequestName));
                 OnPropertyChanged(nameof(RequestHandlerName));
 
+                // if input return value was not changed manualy
                 if (InputReturnValue?.Trim() == GetViewModelName(oldValue))
                 {
                     InputReturnValue = DefaultViewModelName;
                 }
             }
         }
+
         #endregion
 
         #region RequestType Properties
@@ -44,11 +48,7 @@ namespace Template.Wizard
         public NameValue<RequestType> _selectedRequestType;
         public NameValue<RequestType> SelectedRequestType
         {
-            get
-            {
-                return _selectedRequestType;
-            }
-
+            get =>  _selectedRequestType;
             set
             {
                 _selectedRequestType = value;
@@ -56,9 +56,11 @@ namespace Template.Wizard
                 switch(_selectedRequestType.Value)
                 {
                     case RequestType.Query:
-                        // TODO: check id SelectedResponseType is not ResponseType.ExistingType
-                        SelectedResponseType = ResponseTypes.First(x => x.Value == ResponseType.NewItem);
-                        OnPropertyChanged(nameof(SelectedResponseType));
+                        if (SelectedResponseType?.Value != ResponseType.ExistingItem)
+                        {
+                            SelectedResponseType = ResponseTypes.First(x => x.Value == ResponseType.NewItem);
+                            OnPropertyChanged(nameof(SelectedResponseType));
+                        }
                         break;
                     case RequestType.Command:
                         break;
@@ -71,7 +73,6 @@ namespace Template.Wizard
                 if (SelectedPostfixType?.Value == PostfixType.Default)
                 {
                     InputPostfixValue = _selectedRequestType.Name;
-                    OnPropertyChanged(nameof(InputPostfixValue));
                 }
 
                 OnPropertyChanged(nameof(IsResponseTypeComboBoxEnabled));
@@ -115,7 +116,6 @@ namespace Template.Wizard
                         break;
                 }
                 OnPropertyChanged(nameof(IsCustomPostfix));
-                OnPropertyChanged(nameof(InputPostfixValue));
             }
         }
 
@@ -158,15 +158,13 @@ namespace Template.Wizard
                     case ResponseType.ExistingItem:
                         break;
                 }
-                OnPropertyChanged(nameof(ViewModelNameVisibility));
-                OnPropertyChanged(nameof(IsCustomReturnValue));
-                OnPropertyChanged(nameof(InputReturnValue));
+                OnPropertyChanged(nameof(ResponseViewModelNameVisibility));
+                OnPropertyChanged(nameof(IsCustomReturnValueEnabled));
             }
         }
 
         public bool IsResponseTypeComboBoxEnabled => SelectedRequestType?.Value != RequestType.Notification;
-
-        public bool IsCustomReturnValue => SelectedResponseType?.Value != ResponseType.None;
+        public bool IsCustomReturnValueEnabled => IsResponseTypeComboBoxEnabled && SelectedResponseType?.Value != ResponseType.None;
 
         private string _inputReturnValue;
         public string InputReturnValue
@@ -176,6 +174,7 @@ namespace Template.Wizard
             {
                 _inputReturnValue = value;
                 OnPropertyChanged(nameof(InputReturnValue));
+                OnPropertyChanged(nameof(ResponseViewModelName));
             }
         }
         #endregion
@@ -210,12 +209,14 @@ namespace Template.Wizard
         #region Preview Properties
         public string FolderName => InputFileName;
         public string FolderVisibility => ShouldCreateFolder ? Visibility.Visible.ToString() : Visibility.Collapsed.ToString();
+        
         public string RequestName => $"{InputFileName}{InputPostfixValue}.cs";
+        
         public string RequestHandlerName => $"{InputFileName}{InputPostfixValue}Handler.cs";
         public string RequestHandlerNameVisibility => OneFileStyle ? Visibility.Collapsed.ToString() : Visibility.Visible.ToString();
-        public string DefaultViewModelName => GetViewModelName(InputFileName);
 
-        public string ViewModelNameVisibility => 
+        public string ResponseViewModelName => $"{InputReturnValue}.cs";
+        public string ResponseViewModelNameVisibility => 
             SelectedResponseType?.Value == ResponseType.NewItem
                 ? Visibility.Visible.ToString()
                 : Visibility.Collapsed.ToString();
@@ -261,9 +262,14 @@ namespace Template.Wizard
         {
         }
 
-        private void finishButton_Click(object sender, RoutedEventArgs e)
+        private void Ok_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
+            Close();
+        }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
             Close();
         }
 
@@ -273,18 +279,27 @@ namespace Template.Wizard
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
         }
 
-        public UserInput GetUserInputModel()
+        public CreateMediatrItemModel GetUserInputModel()
         {
-            return new UserInput
+            return new CreateMediatrItemModel
             {
                 InputFileName = InputFileName,
-                RequestType = SelectedRequestType.Name,
-                ProcessingType = SelectedProcessingType.Value,
+                FolderName = FolderName,
+                RequestName = new FileNameInfo(RequestName),
+                RequestHandlerName = new FileNameInfo(RequestHandlerName),
+                ResponseViewModelName = new FileNameInfo(ResponseViewModelName),
                 PostfixValue = InputPostfixValue,
-                ReturnValue = "",
+                
+                RequestType = SelectedRequestType.Value,
+                ProcessingType = SelectedProcessingType.Value,
+                ResponseType = SelectedResponseType.Value,
+
                 UsingItems = UsingItems,
                 ConstructorItems = ConstructorItems,
-                ShouldCreateFolder = ShouldCreateFolder
+
+                ShouldCreateFolder = ShouldCreateFolder,
+                OneClassStyle = OneClassStyle,
+                OneFileStyle = OneFileStyle
             };
         }
     }

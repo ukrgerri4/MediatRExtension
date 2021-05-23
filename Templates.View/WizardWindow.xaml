@@ -58,9 +58,9 @@
                         <Image Source="Assets/CSharp.png" Style="{StaticResource IconStyle}"/>
                         <TextBlock Text="{Binding RequestHandlerName}"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Visibility="{Binding ViewModelNameVisibility}" Margin="10,0,0,0">
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding ResponseViewModelNameVisibility}" Margin="10,0,0,0">
                         <Image Source="Assets/CSharp.png" Style="{StaticResource IconStyle}"/>
-                        <TextBlock Text="{Binding InputReturnValue}"/>
+                        <TextBlock Text="{Binding ResponseViewModelName}"/>
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
@@ -179,7 +179,7 @@
             </ComboBox>
             <TextBox Grid.Row="2"
                      Text="{Binding InputReturnValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     IsEnabled="{Binding IsCustomReturnValue}"
+                     IsEnabled="{Binding IsCustomReturnValueEnabled}"
                      Height="25" Width="200" Margin="0,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
         </Grid>
 
@@ -245,9 +245,9 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Button Content="Ok" IsDefault="True"
+                    <Button Content="Ok" IsDefault="True" Click="Ok_Click"
                         Style="{StaticResource DefaultLayout}" Margin="10" Height="25" Width="85"/>
-                    <Button Content="Cancel" IsCancel="True"
+                    <Button Content="Cancel" IsCancel="True" Click="Cancel_Click"
                         Style="{StaticResource DefaultLayout}" Margin="10" Height="25" Width="85"/>
                 </StackPanel>
             </Grid>

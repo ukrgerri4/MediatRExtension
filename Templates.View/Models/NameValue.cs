@@ -1,4 +1,4 @@
-﻿namespace Template.Wizard.Models
+﻿namespace Templates.View.Models
 {
     public class NameValue<T>
     {

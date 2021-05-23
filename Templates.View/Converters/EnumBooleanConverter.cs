@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace Template.Wizard.Converters
+namespace Templates.View.Converters
 {
     public class EnumBooleanConverter : IValueConverter
     {
