@@ -3,8 +3,10 @@ using EnvDTE80;
 using EnvDTE90;
 using Microsoft;
 using Microsoft.Internal.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Shell.Settings;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -50,6 +52,9 @@ namespace TemplatesPackage
             this.package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 
+            var settingsManager = new ShellSettingsManager(this.package);
+            userSettingsStore = settingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
+
             var menuCommandID = new CommandID(CommandSet, CommandId);
             var menuItem = new MenuCommand(this.Execute, menuCommandID);
             commandService.AddCommand(menuItem);
@@ -75,6 +80,8 @@ namespace TemplatesPackage
             }
         }
 
+        private readonly WritableSettingsStore userSettingsStore;
+
         /// <summary>
         /// Initializes the singleton instance of the command.
         /// </summary>
@@ -98,8 +105,28 @@ namespace TemplatesPackage
         /// <param name="e">Event args.</param>
         private void Execute(object sender, EventArgs e)
         {
+            //userSettingsStore.CreateCollection("MediatR\\Test");
+            //var colNames = userSettingsStore.GetSubCollectionNames("MediatR").ToList();
+            //var x = userSettingsStore.GetPropertyCount("MediatR");
+            //userSettingsStore.SetString("MediatR", "", "");
+
             ThreadHelper.JoinableTaskFactory.RunAsync(async() => {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var dte = await ServiceProvider.GetServiceAsync(typeof(DTE)) as DTE;
+
+                SelectedItem selectedItem = null;
+                Project proj = null;
+                if (dte.SelectedItems.Count > 0)
+                {
+                    selectedItem = dte.SelectedItems.Item(1);
+                    proj = null != selectedItem.Project ? selectedItem.Project : selectedItem.ProjectItem.ContainingProject;
+                }
+
+                var safeProjUniqueName = proj.UniqueName.Replace('\\', '_');
+                userSettingsStore.CreateCollection($"MediatR\\{safeProjUniqueName}");
+                var sub = userSettingsStore.GetSubCollectionNames($"MediatR");
+                var imports = userSettingsStore.GetString($"MediatR\\{safeProjUniqueName}", "imports", "");
+                var constructorParams = userSettingsStore.GetString($"MediatR\\{safeProjUniqueName}", "constructor_params");
 
                 var window = new WizardWindow("Class");
                 var result = WindowHelper.ShowModal(window);
@@ -157,6 +184,7 @@ namespace TemplatesPackage
             }
 
             if (null == proj) return;
+
             var classTemplate = (dte.Solution as Solution3).GetProjectItemTemplate("Class", "CSharp");
             var folderProjectItems = GetOrCreateFolderProjectItems(selectedItem, proj, model.InputFileName, model.ShouldCreateFolder);
             var codeClass = CreateRequest(folderProjectItems, model, classTemplate);

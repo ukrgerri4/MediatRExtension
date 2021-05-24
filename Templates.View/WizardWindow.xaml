@@ -2,11 +2,10 @@
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                 Title="MediatR Item Customization Wizard"
+                 Title="MediatR Item Creation"
                  Height="600"
                  Width="700"
                  ResizeMode="NoResize"
-                 Loaded="Window_Loaded"
                  TextOptions.TextFormattingMode="Display"
                  Background="White">
 
@@ -24,7 +23,6 @@
             <Setter Property="Width" Value="16"/>
             <Setter Property="Height" Value="16"/>
         </Style>
-        
     </ui:DialogWindow.Resources>
 
     <Grid Background="White" Margin="5">
@@ -43,7 +41,7 @@
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="5" Margin="5">
-            <GroupBox Header="Generating Files Preview" FontWeight="Bold">
+            <GroupBox Header="Generating Files Preview" FontWeight="SemiBold">
                 <StackPanel Grid.Row="1" Orientation="Vertical"
                            VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5,0,0,0">
                     <StackPanel Orientation="Horizontal" Visibility="{Binding FolderVisibility}">
@@ -71,8 +69,8 @@
                 <ColumnDefinition Width="120"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0" Content="Request type:"
-                   Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
+            <Label Grid.Row="0" Grid.Column="0" Content="Item type:"
+                   Style="{StaticResource DefaultLayout}" FontWeight="SemiBold" />
             <ComboBox Grid.Row="0" Grid.Column="1"
                    ItemsSource="{Binding RequestTypes}"
                    SelectedItem="{Binding SelectedRequestType}"
@@ -94,8 +92,8 @@
                 <ColumnDefinition Width="120"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0" Content="Processing type:"
-                   Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
+            <Label Grid.Row="0" Grid.Column="0" Content="Async/Sync:"
+                   Style="{StaticResource DefaultLayout}" FontWeight="SemiBold" />
             <ComboBox Grid.Row="0" Grid.Column="1"
                    ItemsSource="{Binding ProcessingTypes}"
                    SelectedItem="{Binding SelectedProcessingType}"
@@ -123,8 +121,8 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0"  Content="Postfix type:"
-                   Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
+                <Label Grid.Column="0"  Content="Suffix:"
+                   Style="{StaticResource DefaultLayout}" FontWeight="SemiBold" />
                 <Separator Grid.Column="1" VerticalAlignment="Center" Margin="5,0,0,0"/>
             </Grid>
             <ComboBox Grid.Row="1"
@@ -158,8 +156,8 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0"  Content="Response value type:"
-                   Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
+                <Label Grid.Column="0"  Content="Response type:"
+                   Style="{StaticResource DefaultLayout}" FontWeight="SemiBold" />
                 <Separator Grid.Column="1" VerticalAlignment="Center" Margin="5,0,0,0"/>
             </Grid>
             <ComboBox Grid.Row="1"
@@ -178,9 +176,19 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
             <TextBox Grid.Row="2"
-                     Text="{Binding InputReturnValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      IsEnabled="{Binding IsCustomReturnValueEnabled}"
-                     Height="25" Width="200" Margin="0,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
+                     Height="25" Width="200" Margin="0,10,0,0"
+                     VerticalAlignment="Center"
+                     HorizontalAlignment="Left"
+                     VerticalContentAlignment="Center">
+                <TextBox.Text>
+                    <Binding Path="InputReturnValue" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <DataErrorValidationRule />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
         </Grid>
 
         <Grid Grid.Row="4" Grid.Column="0" Margin="5">
@@ -196,16 +204,17 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Label Grid.Column="0"  Content="Additional adjustments:"
-                   Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
+                   Style="{StaticResource DefaultLayout}" FontWeight="SemiBold" />
                 <Separator Grid.Column="1" VerticalAlignment="Center" Margin="5,0,0,0"/>
             </Grid>
             <CheckBox Grid.Row="1" Content="Create folder"
                       IsChecked="{Binding ShouldCreateFolder, Mode=TwoWay}"/>
             <CheckBox Grid.Row="2" Content="Request and handler in one file"
                       IsChecked="{Binding OneFileStyle, Mode=TwoWay}"/>
-            <CheckBox Grid.Row="3" Content="Request and handler in one class"
+            <!--Hide due to not implement behaviour-->
+            <!--<CheckBox Grid.Row="3" Content="Request and handler in one class"
                       IsChecked="{Binding OneClassStyle, Mode=TwoWay}" 
-                      IsEnabled="{Binding OneFileStyle}"/>
+                      IsEnabled="{Binding OneFileStyle}"/>-->
         </Grid>
 
         <Grid Grid.Row="5" Grid.Column="0" Margin="5">
@@ -213,7 +222,7 @@
                 <RowDefinition Height="1*" />
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
-            <Label Grid.Row="0" Content="Add references:" Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
+            <Label Grid.Row="0" Content="Add imports:" Style="{StaticResource DefaultLayout}" FontWeight="SemiBold" />
             <TextBox Grid.Row="1"
                      Text="{Binding UsingItems}"
                      AcceptsReturn="True"
@@ -225,7 +234,7 @@
                 <RowDefinition Height="1*" />
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
-            <Label Grid.Row="0" Content="Add constructor params:" Style="{StaticResource DefaultLayout}" FontWeight="Bold" />
+            <Label Grid.Row="0" Content="Add constructor parameters:" Style="{StaticResource DefaultLayout}" FontWeight="SemiBold" />
             <TextBox Grid.Row="1"
                      Text="{Binding ConstructorItems}"
                      AcceptsReturn="True"
@@ -240,12 +249,19 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Center">
                     <Label Content="Name:" Style="{StaticResource DefaultLayout}" Margin="10"/>
-                    <TextBox Text="{Binding InputFileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                          Height="25" Width="350" Margin="0,10,0,10" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
+                    <TextBox Height="25" Width="350" Margin="0,10,0,10" FontWeight="SemiBold" VerticalAlignment="Stretch" VerticalContentAlignment="Center">
+                        <TextBox.Text>
+                            <Binding Path="InputFileName" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <DataErrorValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Button Content="Ok" IsDefault="True" Click="Ok_Click"
+                    <Button Content="Ok" IsDefault="True" IsEnabled="{Binding IsFormValid}" Click="Ok_Click"
                         Style="{StaticResource DefaultLayout}" Margin="10" Height="25" Width="85"/>
                     <Button Content="Cancel" IsCancel="True" Click="Cancel_Click"
                         Style="{StaticResource DefaultLayout}" Margin="10" Height="25" Width="85"/>

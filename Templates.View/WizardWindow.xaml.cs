@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.PlatformUI;
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -9,7 +10,7 @@ using Templates.View.Models;
 
 namespace Template.Wizard
 {
-    public partial class WizardWindow : DialogWindow, INotifyPropertyChanged
+    public partial class WizardWindow : DialogWindow, INotifyPropertyChanged, IDataErrorInfo
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -31,6 +32,8 @@ namespace Template.Wizard
                 OnPropertyChanged(nameof(FolderName));
                 OnPropertyChanged(nameof(RequestName));
                 OnPropertyChanged(nameof(RequestHandlerName));
+                OnPropertyChanged(nameof(IsFormValid));
+
 
                 // if input return value was not changed manualy
                 if (InputReturnValue?.Trim() == GetViewModelName(oldValue))
@@ -133,6 +136,7 @@ namespace Template.Wizard
                 OnPropertyChanged(nameof(RequestName));
                 OnPropertyChanged(nameof(RequestHandlerName));
                 OnPropertyChanged(nameof(InputReturnValue));
+                OnPropertyChanged(nameof(IsFormValid));
             }
         }
 
@@ -156,6 +160,7 @@ namespace Template.Wizard
                         InputReturnValue = DefaultViewModelName;
                         break;
                     case ResponseType.ExistingItem:
+                        OnPropertyChanged(nameof(IsFormValid));
                         break;
                 }
                 OnPropertyChanged(nameof(ResponseViewModelNameVisibility));
@@ -175,6 +180,7 @@ namespace Template.Wizard
                 _inputReturnValue = value;
                 OnPropertyChanged(nameof(InputReturnValue));
                 OnPropertyChanged(nameof(ResponseViewModelName));
+                OnPropertyChanged(nameof(IsFormValid));
             }
         }
         #endregion
@@ -220,6 +226,38 @@ namespace Template.Wizard
             SelectedResponseType?.Value == ResponseType.NewItem
                 ? Visibility.Visible.ToString()
                 : Visibility.Collapsed.ToString();
+        #endregion
+
+        #region Validation
+        public string Error => "Test";
+        public string this[string columnName]
+        {
+            get
+            {
+                var error = string.Empty;
+                switch (columnName)
+                {
+                    case "InputFileName":
+                        if (!InputFileNameValid)
+                        {
+                            error = "File name type can't be empty.";
+                        }
+                        break;
+                    case "InputReturnValue":
+                        if (!InputReturnValueValid)
+                        {
+                            error = "Response type can't be empty.";
+                        }
+                        break;
+                }
+                return error;
+            }
+        }
+
+        private bool InputReturnValueValid => SelectedResponseType.Value == ResponseType.None || !string.IsNullOrWhiteSpace(InputReturnValue);
+        private bool InputFileNameValid => !string.IsNullOrWhiteSpace(InputFileName);
+
+        public bool IsFormValid => InputReturnValueValid && InputFileNameValid && !RequestName.Equals(ResponseViewModelName, StringComparison.InvariantCultureIgnoreCase);
 
         #endregion
 
@@ -256,10 +294,6 @@ namespace Template.Wizard
         private string GetViewModelName(string input)
         {
             return $"{input}{VIEW_MODEL}";
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
         }
 
         private void Ok_Click(object sender, RoutedEventArgs e)
