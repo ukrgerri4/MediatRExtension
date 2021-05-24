@@ -128,7 +128,7 @@ namespace TemplatesPackage
                     catch (Exception ex)
                     {
                         MessageBox.Show(
-                            "MeditR item creation error.",
+                            ex.Message,
                             "Error",
                             MessageBoxButton.OK,
                             MessageBoxImage.Error
@@ -159,11 +159,11 @@ namespace TemplatesPackage
             if (null == proj) return;
             var classTemplate = (dte.Solution as Solution3).GetProjectItemTemplate("Class", "CSharp");
             var folderProjectItems = GetOrCreateFolderProjectItems(selectedItem, proj, model.InputFileName, model.ShouldCreateFolder);
-            var codeNamespace = CreateRequest(folderProjectItems, model, classTemplate);
+            var codeClass = CreateRequest(folderProjectItems, model, classTemplate);
 
             if (model.OneFileStyle)
             {
-                CreateRequestHandlerInExistingFile(codeNamespace, model);
+                CreateRequestHandlerInExistingFile(codeClass, model);
             }
             else
             {
@@ -196,8 +196,15 @@ namespace TemplatesPackage
 
             // add using to file
             var fileCodeModel = requestProjectItem.FileCodeModel as FileCodeModel2;
-            fileCodeModel?.AddImport("MediatR");
-            
+            var imports = fileCodeModel.CodeElements.OfType<CodeImport>().Select(x => x.Namespace).ToList();
+            foreach (var import in model.DefaultRequestImports)
+            {
+                if (!imports.Any(x => x == import))
+                {
+                    fileCodeModel?.AddImport(import, 0);
+                }
+            }
+
             // add public access
             codeClass.Access = vsCMAccess.vsCMAccessPublic;
 
@@ -213,6 +220,7 @@ namespace TemplatesPackage
         {
             var handlerProjectItem = projectItems.AddFromTemplate(classTemplate, $"{model.RequestHandlerName.FullName}");
             var codeClass = handlerProjectItem.FindCodeClassByName(model.RequestHandlerName.Name);
+            AdjustRequestHandler(codeClass, model);
         }
 
         private void CreateRequestHandlerInExistingFile(CodeClass requestCodeClass, CreateMediatrItemModel model)
@@ -224,15 +232,18 @@ namespace TemplatesPackage
         private void AdjustRequestHandler(CodeClass codeClass, CreateMediatrItemModel model)
         {
             var fileCodeModel = (codeClass.Namespace.Parent as FileCodeModel2);
-            model.UsingItems?
-                .Split(new string[] { $"{Environment.NewLine}" }, StringSplitOptions.RemoveEmptyEntries)
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Select(x => x.Trim().TrimPrefix("using ").TrimSuffix(";"))
+            model.Imports
                 .ToList()
                 .ForEach(x => fileCodeModel?.AddImport(x));
 
-            fileCodeModel?.AddImport("System.Threading", -1);
-
+            var currentImports = fileCodeModel.CodeElements.OfType<CodeImport>().Select(x => x.Namespace).ToList();
+            foreach (var import in model.DefaultHandlerImports)
+            {
+                if (!currentImports.Any(x => x == import))
+                {
+                    fileCodeModel?.AddImport(import, -1);
+                }
+            } 
 
             // add public access 
             codeClass.Access = vsCMAccess.vsCMAccessPublic;
@@ -250,37 +261,30 @@ namespace TemplatesPackage
                 Position: 0,
                 Access: vsCMAccess.vsCMAccessPublic);
 
-            var constructorParams = model.ConstructorItems?
-                .Split(new string[] { $"{Environment.NewLine}" }, StringSplitOptions.RemoveEmptyEntries)
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Select(x =>
-                {
-                    var parameters = Regex.Replace(x, @"\s+", " ").Trim().Split(' ');
-                    return new KeyValuePair<string, string>(parameters[0], parameters[1]);
-                })
-                .ToList();
-
-            constructorParams.ForEach(x => constructor.AddParameter(x.Value, x.Key, -1));
+            var constructorParams = model.ConstructorParameters.ToList();
+            constructorParams.ForEach(x => constructor.AddParameter(x.Name, x.Type, -1));
             constructorParams.ForEach(x => {
-                var variable = codeClass.AddVariable(x.Value, x.Key, 0);
-                variable.StartPoint.CreateEditPoint().Insert("protected readonly ");
+                var variable = codeClass.AddVariable(x.Name, x.Type, 0);
+                variable.StartPoint.CreateEditPoint().Insert(model.ServicesAcces);
             });
 
             var constructorEditPoit = constructor.GetStartPoint(vsCMPart.vsCMPartBody).CreateEditPoint();
-            constructorParams.ForEach(x => constructorEditPoit.Insert("\t\t\t" + "this." + x.Value + " = " + x.Value + ";" + Environment.NewLine));
+            constructorParams.ForEach(x => constructorEditPoit.Insert("\t\t\t" + "this." + x.Name + " = " + x.Name + ";" + Environment.NewLine));
 
             // add handler
-            // TODO: sync\async handlers
             var handler = codeClass.AddFunction(
                 Name: "Handle",
                 Kind: vsCMFunction.vsCMFunctionFunction,
-                Type: "Task<Unit>",
+                Type: model.HandlerHandleReturnValueName,
                 Position: -1);
 
             handler.AddParameter("request", model.RequestName.Name, -1);
-            handler.AddParameter("cancellationToken", "CancellationToken", -1);
+            if(model.ProcessingType == ProcessingType.Async)
+            {
+                handler.AddParameter("cancellationToken", "CancellationToken", -1);
+            }
 
-            handler.StartPoint.CreateEditPoint().ReplaceText(0, "public async ", (int)vsEPReplaceTextOptions.vsEPReplaceTextAutoformat);
+            handler.StartPoint.CreateEditPoint().ReplaceText(0, model.HandlerHandleAcces, (int)vsEPReplaceTextOptions.vsEPReplaceTextAutoformat);
             handler.GetStartPoint(vsCMPart.vsCMPartBody).CreateEditPoint().Insert("\t\t\tthrow new NotImplementedException();");
         }
 
@@ -288,7 +292,9 @@ namespace TemplatesPackage
         {
             if (model.ResponseType == ResponseType.NewItem) {
                 var viewModelProjectItem = projectItems.AddFromTemplate(classTemplate, $"{model.ResponseViewModelName.FullName}");
-                viewModelProjectItem.Save();
+                var codeClass = viewModelProjectItem.FindCodeClassByName(model.ResponseViewModelName.Name);
+                if (null == codeClass) { return; }
+                codeClass.Access = vsCMAccess.vsCMAccessPublic;
             }
         }
     }
