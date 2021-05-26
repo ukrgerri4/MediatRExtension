@@ -36,7 +36,9 @@
          group as the part of a menu contained between two lines. The parent of a group
          must be a menu. -->
     <Groups>
-      <Group guid="guidMediatRTemplatesPackageCmdSet" id="MyMenuGroup"></Group>
+      <Group guid="guidMediatRTemplatesPackageCmdSet" id="MyMenuGroup" priority="0x0000">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CSCD_PROJECT_ADD"/>
+      </Group>
     </Groups>
 
     <!--Buttons section. -->
@@ -50,11 +52,11 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
-      <Button guid="guidMediatRTemplatesPackageCmdSet" id="AddMediatRItemId" priority="0x0100" type="Button">
+      <Button guid="guidMediatRTemplatesPackageCmdSet" id="AddMediatRItemId" priority="0x0000" type="Button">
         <Parent guid="guidMediatRTemplatesPackageCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
-          <ButtonText>Add MediatR item...</ButtonText>
+          <ButtonText>MediatR Item...</ButtonText>
         </Strings>
       </Button>
     </Buttons>
@@ -70,14 +72,14 @@
     </Bitmaps>
   </Commands>
 
-  <CommandPlacements>
+  <!--<CommandPlacements>
     <CommandPlacement guid="guidMediatRTemplatesPackageCmdSet" id="MyMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE" />
     </CommandPlacement>
     <CommandPlacement guid="guidMediatRTemplatesPackageCmdSet" id="MyMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE" />
     </CommandPlacement>
-  </CommandPlacements>
+  </CommandPlacements>-->
 
   <Symbols>
     <!-- This is the package guid. -->
