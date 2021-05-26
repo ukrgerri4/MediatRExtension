@@ -166,7 +166,7 @@ namespace TemplatesPackage.Commands
             });
         }
 
-        private async Task CreateMediatrItemsAsync(CreateItemModel model)
+        private async Task CreateMediatrItemsAsync(CreateMessageModel model)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             var dte = await ServiceProvider.GetServiceAsync(typeof(DTE)) as DTE;
@@ -212,10 +212,10 @@ namespace TemplatesPackage.Commands
             return folderItem.ProjectItems;
         }
 
-        private CodeClass CreateRequest(ProjectItems projectItems, CreateItemModel model, string classTemplate)
+        private CodeClass CreateRequest(ProjectItems projectItems, CreateMessageModel model, string classTemplate)
         {
-            var requestProjectItem = projectItems.AddFromTemplate(classTemplate, $"{model.RequestName.FullName}");
-            var codeClass = requestProjectItem.FindCodeClassByName(model.RequestName.Name);
+            var requestProjectItem = projectItems.AddFromTemplate(classTemplate, $"{model.MessageName.FullName}");
+            var codeClass = requestProjectItem.FindCodeClassByName(model.MessageName.Name);
             
             if (null == codeClass) { throw new ArgumentNullException(nameof(codeClass)); } // add message
 
@@ -241,20 +241,20 @@ namespace TemplatesPackage.Commands
             return codeClass;
         }
 
-        private void CreateRequestHandlerInNewFile(ProjectItems projectItems, CreateItemModel model, string classTemplate)
+        private void CreateRequestHandlerInNewFile(ProjectItems projectItems, CreateMessageModel model, string classTemplate)
         {
-            var handlerProjectItem = projectItems.AddFromTemplate(classTemplate, $"{model.RequestHandlerName.FullName}");
-            var codeClass = handlerProjectItem.FindCodeClassByName(model.RequestHandlerName.Name);
+            var handlerProjectItem = projectItems.AddFromTemplate(classTemplate, $"{model.MessageHandlerName.FullName}");
+            var codeClass = handlerProjectItem.FindCodeClassByName(model.MessageHandlerName.Name);
             AdjustRequestHandler(codeClass, model);
         }
 
-        private void CreateRequestHandlerInExistingFile(CodeClass requestCodeClass, CreateItemModel model)
+        private void CreateRequestHandlerInExistingFile(CodeClass requestCodeClass, CreateMessageModel model)
         {
-            var codeClass = requestCodeClass.Namespace.AddClass(model.RequestHandlerName.Name, -1, Access: vsCMAccess.vsCMAccessPublic);
+            var codeClass = requestCodeClass.Namespace.AddClass(model.MessageHandlerName.Name, -1, Access: vsCMAccess.vsCMAccessPublic);
             AdjustRequestHandler(codeClass, model);
         }
 
-        private void AdjustRequestHandler(CodeClass codeClass, CreateItemModel model)
+        private void AdjustRequestHandler(CodeClass codeClass, CreateMessageModel model)
         {
             var fileCodeModel = (codeClass.Namespace.Parent as FileCodeModel2);
             model.Imports
@@ -287,7 +287,7 @@ namespace TemplatesPackage.Commands
                 Access: vsCMAccess.vsCMAccessPublic);
 
             var constructorParams = model.ConstructorParameters.ToList();
-            constructorParams.ForEach(x => x.Type = x.Type.Replace("$self$", model.RequestHandlerName.Name));
+            constructorParams.ForEach(x => x.Type = x.Type.Replace("$self$", model.MessageHandlerName.Name));
             constructorParams.ForEach(x => constructor.AddParameter(x.Name, x.Type, -1));
             constructorParams.ForEach(x => {
                 var variable = codeClass.AddVariable(x.Name, x.Type, 0);
@@ -304,7 +304,7 @@ namespace TemplatesPackage.Commands
                 Type: model.HandlerHandleReturnValueName,
                 Position: -1);
 
-            handler.AddParameter("request", model.RequestName.Name, -1);
+            handler.AddParameter("request", model.MessageName.Name, -1);
             if(model.ProcessingType == ProcessingType.Async)
             {
                 handler.AddParameter("cancellationToken", "CancellationToken", -1);
@@ -314,7 +314,7 @@ namespace TemplatesPackage.Commands
             handler.GetStartPoint(vsCMPart.vsCMPartBody).CreateEditPoint().Insert("\t\t\tthrow new NotImplementedException();");
         }
 
-        private void CreateViewModel(ProjectItems projectItems, CreateItemModel model, string classTemplate)
+        private void CreateViewModel(ProjectItems projectItems, CreateMessageModel model, string classTemplate)
         {
             if (model.ResponseType == ResponseType.NewItem) {
                 var viewModelProjectItem = projectItems.AddFromTemplate(classTemplate, $"{model.ResponseViewModelName.FullName}");
@@ -324,7 +324,7 @@ namespace TemplatesPackage.Commands
             }
         }
 
-        private void SaveUserSettigs(Project project, CreateItemModel model)
+        private void SaveUserSettigs(Project project, CreateMessageModel model)
         {
             settingsStore.SetImportsByProject(project, model.Imports);
             settingsStore.SetConstructorParametersByProject(project, model.ConstructorParameters);

@@ -36,7 +36,9 @@
          group as the part of a menu contained between two lines. The parent of a group
          must be a menu. -->
     <Groups>
-      <Group guid="guidMediatRTemplatesPackageCmdSet" id="MyMenuGroup"></Group>
+      <Group guid="guidMediatRTemplatesPackageCmdSet" id="MyMenuGroup" priority="0x0000">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CSCD_PROJECT_ADD"/>
+      </Group>
     </Groups>
 
     <!--Buttons section. -->
@@ -50,11 +52,11 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
-      <Button guid="guidMediatRTemplatesPackageCmdSet" id="AddMediatRItemId" priority="0x0100" type="Button">
+      <Button guid="guidMediatRTemplatesPackageCmdSet" id="AddMediatRMessageId" priority="0x0000" type="Button">
         <Parent guid="guidMediatRTemplatesPackageCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
-          <ButtonText>Add MediatR item...</ButtonText>
+          <ButtonText>MediatR Message...</ButtonText>
         </Strings>
       </Button>
     </Buttons>
@@ -70,14 +72,14 @@
     </Bitmaps>
   </Commands>
 
-  <CommandPlacements>
+  <!--<CommandPlacements>
     <CommandPlacement guid="guidMediatRTemplatesPackageCmdSet" id="MyMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE" />
     </CommandPlacement>
     <CommandPlacement guid="guidMediatRTemplatesPackageCmdSet" id="MyMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE" />
     </CommandPlacement>
-  </CommandPlacements>
+  </CommandPlacements>-->
 
   <Symbols>
     <!-- This is the package guid. -->
@@ -86,7 +88,7 @@
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidMediatRTemplatesPackageCmdSet" value="{49e145c8-7463-4521-92c4-60184f2e30c9}">
       <IDSymbol name="MyMenuGroup" value="0x1020" />
-      <IDSymbol name="AddMediatRItemId" value="0x0100" />
+      <IDSymbol name="AddMediatRMessageId" value="0x0100" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{b493ca34-5bc8-4e73-bc58-56ae4247943d}" >

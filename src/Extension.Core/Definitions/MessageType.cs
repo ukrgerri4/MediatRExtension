@@ -1,6 +1,6 @@
 ﻿namespace Extension.Core.Definitions
 {
-    public enum RequestType
+    public enum MessageType
     {
         Query,
         Command,

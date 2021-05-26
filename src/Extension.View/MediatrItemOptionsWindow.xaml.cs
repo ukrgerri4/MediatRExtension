@@ -30,8 +30,8 @@ namespace Extension.View
                 _inputFileName = value;
                 OnPropertyChanged(nameof(InputFileName));
                 OnPropertyChanged(nameof(FolderName));
-                OnPropertyChanged(nameof(RequestName));
-                OnPropertyChanged(nameof(RequestHandlerName));
+                OnPropertyChanged(nameof(MessageName));
+                OnPropertyChanged(nameof(MessageHandlerName));
                 OnPropertyChanged(nameof(IsFormValid));
 
 
@@ -45,29 +45,29 @@ namespace Extension.View
 
         #endregion
 
-        #region RequestType Properties
+        #region MessageType Properties
 
-        public NameValue<RequestType>[] RequestTypes { get; set; }
-        public NameValue<RequestType> _selectedRequestType;
-        public NameValue<RequestType> SelectedRequestType
+        public NameValue<MessageType>[] MessageTypes { get; set; }
+        public NameValue<MessageType> _selectedMessageType;
+        public NameValue<MessageType> SelectedMessageType
         {
-            get =>  _selectedRequestType;
+            get =>  _selectedMessageType;
             set
             {
-                _selectedRequestType = value;
+                _selectedMessageType = value;
 
-                switch(_selectedRequestType.Value)
+                switch(_selectedMessageType.Value)
                 {
-                    case RequestType.Query:
+                    case MessageType.Query:
                         if (SelectedResponseType?.Value != ResponseType.ExistingItem)
                         {
                             SelectedResponseType = ResponseTypes.First(x => x.Value == ResponseType.NewItem);
                             OnPropertyChanged(nameof(SelectedResponseType));
                         }
                         break;
-                    case RequestType.Command:
+                    case MessageType.Command:
                         break;
-                    case RequestType.Notification:
+                    case MessageType.Notification:
                         SelectedResponseType = ResponseTypes.First(x => x.Value == ResponseType.None);
                         OnPropertyChanged(nameof(SelectedResponseType));
                         break;
@@ -75,7 +75,7 @@ namespace Extension.View
 
                 if (SelectedPostfixType?.Value == PostfixType.Default)
                 {
-                    InputPostfixValue = _selectedRequestType.Name;
+                    InputPostfixValue = _selectedMessageType.Name;
                 }
 
                 OnPropertyChanged(nameof(IsResponseTypeComboBoxEnabled));
@@ -110,7 +110,7 @@ namespace Extension.View
                 switch (_selectedPostfixType.Value)
                 {
                     case PostfixType.Default:
-                        InputPostfixValue = SelectedRequestType?.Name ?? string.Empty;
+                        InputPostfixValue = SelectedMessageType?.Name ?? string.Empty;
                         break;
                     case PostfixType.None:
                         InputPostfixValue = string.Empty;
@@ -133,8 +133,8 @@ namespace Extension.View
                 _inputPostfixValue = value;
                 OnPropertyChanged(nameof(InputPostfixValue));
                 OnPropertyChanged(nameof(FolderName));
-                OnPropertyChanged(nameof(RequestName));
-                OnPropertyChanged(nameof(RequestHandlerName));
+                OnPropertyChanged(nameof(MessageName));
+                OnPropertyChanged(nameof(MessageHandlerName));
                 OnPropertyChanged(nameof(InputReturnValue));
                 OnPropertyChanged(nameof(IsFormValid));
             }
@@ -168,7 +168,7 @@ namespace Extension.View
             }
         }
 
-        public bool IsResponseTypeComboBoxEnabled => SelectedRequestType?.Value != RequestType.Notification;
+        public bool IsResponseTypeComboBoxEnabled => SelectedMessageType?.Value != MessageType.Notification;
         public bool IsCustomReturnValueEnabled => IsResponseTypeComboBoxEnabled && SelectedResponseType?.Value != ResponseType.None;
 
         private string _inputReturnValue;
@@ -207,7 +207,7 @@ namespace Extension.View
             {
                 _oneFileStyle = value;
                 OnPropertyChanged(nameof(OneFileStyle));
-                OnPropertyChanged(nameof(RequestHandlerNameVisibility));
+                OnPropertyChanged(nameof(MessageHandlerNameVisibility));
             }
         }
         public bool OneClassStyle { get; set; }
@@ -216,10 +216,10 @@ namespace Extension.View
         public string FolderName => InputFileName;
         public string FolderVisibility => ShouldCreateFolder ? Visibility.Visible.ToString() : Visibility.Collapsed.ToString();
         
-        public string RequestName => $"{InputFileName}{InputPostfixValue}.cs";
+        public string MessageName => $"{InputFileName}{InputPostfixValue}.cs";
         
-        public string RequestHandlerName => $"{InputFileName}{InputPostfixValue}Handler.cs";
-        public string RequestHandlerNameVisibility => OneFileStyle ? Visibility.Collapsed.ToString() : Visibility.Visible.ToString();
+        public string MessageHandlerName => $"{InputFileName}{InputPostfixValue}Handler.cs";
+        public string MessageHandlerNameVisibility => OneFileStyle ? Visibility.Collapsed.ToString() : Visibility.Visible.ToString();
 
         public string ResponseViewModelName => $"{InputReturnValue}.cs";
         public string ResponseViewModelNameVisibility => 
@@ -257,7 +257,7 @@ namespace Extension.View
         private bool InputReturnValueValid => SelectedResponseType.Value == ResponseType.None || !string.IsNullOrWhiteSpace(InputReturnValue);
         private bool InputFileNameValid => !string.IsNullOrWhiteSpace(InputFileName);
 
-        public bool IsFormValid => InputReturnValueValid && InputFileNameValid && !RequestName.Equals(ResponseViewModelName, StringComparison.InvariantCultureIgnoreCase);
+        public bool IsFormValid => InputReturnValueValid && InputFileNameValid && !MessageName.Equals(ResponseViewModelName, StringComparison.InvariantCultureIgnoreCase);
 
         #endregion
 
@@ -268,8 +268,8 @@ namespace Extension.View
             InputReturnValue = string.Empty;
             InputFileName = string.IsNullOrWhiteSpace(settings.InputFileName) ? string.Empty : settings.InputFileName;
 
-            RequestTypes = Enums.ToNameValues<RequestType>().ToArray();
-            SelectedRequestType = RequestTypes.First(x => x.Value == RequestType.Command);
+            MessageTypes = Enums.ToNameValues<MessageType>().ToArray();
+            SelectedMessageType = MessageTypes.First(x => x.Value == MessageType.Command);
 
             InputPostfixValue = string.Empty;
             PostfixTypes = Enums.ToNameValues<PostfixType>().ToArray();
@@ -313,18 +313,18 @@ namespace Extension.View
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
         }
 
-        public CreateItemModel GetUserInputModel()
+        public CreateMessageModel GetUserInputModel()
         {
-            return new CreateItemModel
+            return new CreateMessageModel
             {
                 InputFileName = InputFileName,
                 FolderName = FolderName,
-                RequestName = new FileNameInfo(RequestName),
-                RequestHandlerName = new FileNameInfo(RequestHandlerName),
+                MessageName = new FileNameInfo(MessageName),
+                MessageHandlerName = new FileNameInfo(MessageHandlerName),
                 ResponseViewModelName = new FileNameInfo(ResponseViewModelName),
                 PostfixValue = InputPostfixValue,
                 
-                RequestType = SelectedRequestType.Value,
+                MessageType = SelectedMessageType.Value,
                 ProcessingType = SelectedProcessingType.Value,
                 ResponseType = SelectedResponseType.Value,
 
