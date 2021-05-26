@@ -7,17 +7,17 @@ using System.Text.RegularExpressions;
 
 namespace Extension.Core.Models
 {
-    public class CreateItemModel
+    public class CreateMessageModel
     {
         public string InputFileName { get; set; }
         public string FolderName { get; set; }
-        public FileNameInfo RequestName { get; set; }
-        public FileNameInfo RequestHandlerName { get; set; }
+        public FileNameInfo MessageName { get; set; }
+        public FileNameInfo MessageHandlerName { get; set; }
         public FileNameInfo ResponseViewModelName { get; set; }
         public string PostfixValue { get; set; }
 
 
-        public RequestType RequestType { get; set; }
+        public MessageType MessageType { get; set; }
         public ProcessingType ProcessingType { get; set; }
         public ResponseType ResponseType { get; set; }
         
@@ -33,7 +33,7 @@ namespace Extension.Core.Models
         {
             get
             {
-                var interfaceStr = RequestType == RequestType.Notification ? " : INotification" : " : IRequest";
+                var interfaceStr = MessageType == MessageType.Notification ? " : INotification" : " : IRequest";
                 if (ResponseType != ResponseType.None)
                 {
                     interfaceStr = $"{interfaceStr}<{ResponseViewModelName.Name}>";
@@ -48,14 +48,14 @@ namespace Extension.Core.Models
                 string interfaceStr = "";
                 if (ProcessingType == ProcessingType.Sync)
                 {
-                    interfaceStr = RequestType == RequestType.Notification ? " : NotificationHandler" : " : RequestHandler";
+                    interfaceStr = MessageType == MessageType.Notification ? " : NotificationHandler" : " : RequestHandler";
                 }
                 else
                 {
-                    interfaceStr = RequestType == RequestType.Notification ? " : INotificationHandler" : " : IRequestHandler";
+                    interfaceStr = MessageType == MessageType.Notification ? " : INotificationHandler" : " : IRequestHandler";
                 }
                 
-                interfaceStr = $"{interfaceStr}<{RequestName.Name}";
+                interfaceStr = $"{interfaceStr}<{MessageName.Name}";
 
 
                 if (ResponseType != ResponseType.None && !string.IsNullOrWhiteSpace(ResponseViewModelName.Name))
@@ -89,7 +89,7 @@ namespace Extension.Core.Models
                 }
                 else
                 {
-                    if (RequestType == RequestType.Notification)
+                    if (MessageType == MessageType.Notification)
                     {
                         return "Task";
                     }

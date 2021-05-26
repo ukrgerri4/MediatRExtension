@@ -43,12 +43,12 @@
   <ItemGroup>
     <Compile Include="Definitions\PostfixType.cs" />
     <Compile Include="Definitions\ProcessingType.cs" />
-    <Compile Include="Definitions\RequestType.cs" />
+    <Compile Include="Definitions\MessageType.cs" />
     <Compile Include="Definitions\ResponseType.cs" />
     <Compile Include="Extensions\Enums.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Models\TypeNameModel.cs" />
-    <Compile Include="Models\CreateItemModel.cs" />
+    <Compile Include="Models\CreateMessageModel.cs" />
     <Compile Include="Models\FileNameInfo.cs" />
     <Compile Include="Models\NameValue.cs" />
     <Compile Include="Models\StoredUserSettings.cs" />
