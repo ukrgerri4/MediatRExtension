@@ -7,7 +7,8 @@
         <MoreInfo>https://github.com/ukrgerri4/MediatRExtension</MoreInfo>
         <License>License\License.txt</License>
         <Icon>Assets\MediatR.ico</Icon>
-        <Tags>mediatr, mediatr extension, mediatr template, extension template, extension, template</Tags>
+        <Tags>mediatr, mediatr extension, c#, mediatr template, extension, template</Tags>
+        <Preview>true</Preview>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0, 17.0)" />
