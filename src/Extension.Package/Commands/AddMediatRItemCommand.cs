@@ -197,6 +197,11 @@ namespace TemplatesPackage.Commands
 
             CreateViewModel(folderProjectItems, model, classTemplate);
 
+            if (model.ShouldCreateValidationFile)
+            {
+                CreateValidationFile(folderProjectItems, model, classTemplate);
+            }
+
             proj.Save();
         }
 
@@ -322,6 +327,43 @@ namespace TemplatesPackage.Commands
                 if (null == codeClass) { return; }
                 codeClass.Access = vsCMAccess.vsCMAccessPublic;
             }
+        }
+
+        private void CreateValidationFile(ProjectItems projectItems, CreateMessageModel model, string classTemplate)
+        {
+            var validationProjectItem = projectItems.AddFromTemplate(classTemplate, $"{model.ValidationFileName.FullName}");
+            var codeClass = validationProjectItem.FindCodeClassByName(model.ValidationFileName.Name);
+
+            if (null == codeClass) { throw new ArgumentNullException(nameof(codeClass)); } // add message
+
+            // add using to file
+            var fileCodeModel = validationProjectItem.FileCodeModel as FileCodeModel2;
+            var imports = fileCodeModel.CodeElements.OfType<CodeImport>().Select(x => x).ToList();
+            foreach (var import in imports)
+            {
+                fileCodeModel.Remove(import);
+            }
+
+            foreach (var import in model.DefaultValidationImports)
+            {
+                fileCodeModel?.AddImport(import, 0);
+            }
+
+            // add public access
+            codeClass.Access = vsCMAccess.vsCMAccessPublic;
+
+            // add interface
+            var editPoint = codeClass.StartPoint.CreateEditPoint();
+            editPoint.EndOfLine();
+            editPoint.Insert(model.ValidationInterface);
+
+            // add constructor with params
+            var constructor = codeClass.AddFunction(
+                Name: codeClass.Name,
+                Kind: vsCMFunction.vsCMFunctionConstructor,
+                Type: vsCMTypeRef.vsCMTypeRefVoid,
+                Position: 0,
+                Access: vsCMAccess.vsCMAccessPublic);
         }
 
         private void SaveUserSettigs(Project project, CreateMessageModel model)

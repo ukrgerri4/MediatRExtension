@@ -14,6 +14,7 @@ namespace Extension.Core.Models
         public FileNameInfo MessageName { get; set; }
         public FileNameInfo MessageHandlerName { get; set; }
         public FileNameInfo ResponseViewModelName { get; set; }
+        public FileNameInfo ValidationFileName { get; set; }
         public string PostfixValue { get; set; }
 
 
@@ -23,6 +24,7 @@ namespace Extension.Core.Models
         
         
         public bool ShouldCreateFolder { get; set; }
+        public bool ShouldCreateValidationFile { get; set; }
         public bool OneFileStyle { get; set; }
         public bool OneClassStyle { get; set; }
 
@@ -70,6 +72,8 @@ namespace Extension.Core.Models
                 return interfaceStr;
             }
         }
+
+        public string ValidationInterface => $" : AbstractValidator<{MessageName.Name}>";
 
         public string HandlerHandleAcces
         {
@@ -120,6 +124,8 @@ namespace Extension.Core.Models
 
             }
         }
+
+        public string[] DefaultValidationImports => new string[] { "FluentValidation" };
 
         public IEnumerable<string> Imports
         {

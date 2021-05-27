@@ -32,6 +32,7 @@ namespace Extension.View
                 OnPropertyChanged(nameof(FolderName));
                 OnPropertyChanged(nameof(MessageName));
                 OnPropertyChanged(nameof(MessageHandlerName));
+                OnPropertyChanged(nameof(ValidatorFileName));
                 OnPropertyChanged(nameof(IsFormValid));
 
 
@@ -135,6 +136,7 @@ namespace Extension.View
                 OnPropertyChanged(nameof(FolderName));
                 OnPropertyChanged(nameof(MessageName));
                 OnPropertyChanged(nameof(MessageHandlerName));
+                OnPropertyChanged(nameof(ValidatorFileName));
                 OnPropertyChanged(nameof(InputReturnValue));
                 OnPropertyChanged(nameof(IsFormValid));
             }
@@ -210,6 +212,20 @@ namespace Extension.View
                 OnPropertyChanged(nameof(MessageHandlerNameVisibility));
             }
         }
+
+        private bool _shouldCreateValidationFile;
+        public bool ShouldCreateValidationFile
+        {
+            get => _shouldCreateValidationFile;
+            set
+            {
+                _shouldCreateValidationFile = value;
+                OnPropertyChanged(nameof(ShouldCreateValidationFile));
+                OnPropertyChanged(nameof(ValidatorFileVisibility));
+            }
+        }
+
+
         public bool OneClassStyle { get; set; }
 
         #region Preview Properties
@@ -226,6 +242,10 @@ namespace Extension.View
             SelectedResponseType?.Value == ResponseType.NewItem
                 ? Visibility.Visible.ToString()
                 : Visibility.Collapsed.ToString();
+
+        public string ValidatorFileName => $"{InputFileName}{InputPostfixValue}Validator.cs";
+        public string ValidatorFileVisibility => ShouldCreateValidationFile ? Visibility.Visible.ToString() : Visibility.Collapsed.ToString();
+
         #endregion
 
         #region Validation
@@ -322,6 +342,7 @@ namespace Extension.View
                 MessageName = new FileNameInfo(MessageName),
                 MessageHandlerName = new FileNameInfo(MessageHandlerName),
                 ResponseViewModelName = new FileNameInfo(ResponseViewModelName),
+                ValidationFileName = new FileNameInfo(ValidatorFileName),
                 PostfixValue = InputPostfixValue,
                 
                 MessageType = SelectedMessageType.Value,
@@ -332,6 +353,7 @@ namespace Extension.View
                 ConstructorItems = ConstructorItems,
 
                 ShouldCreateFolder = ShouldCreateFolder,
+                ShouldCreateValidationFile = ShouldCreateValidationFile,
                 OneClassStyle = OneClassStyle,
                 OneFileStyle = OneFileStyle
             };
