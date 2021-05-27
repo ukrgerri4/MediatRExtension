@@ -188,7 +188,14 @@ namespace TemplatesPackage.Commands
 
             if (model.OneFileStyle)
             {
-                CreateRequestHandlerInExistingFile(codeClass, model);
+                if (model.OneClassStyle)
+                {
+                    CreateRequestHandlerInMessageClass(codeClass, model);
+                }
+                else
+                {
+                    CreateRequestHandlerInMessageFile(codeClass, model);
+                }
             }
             else
             {
@@ -249,19 +256,32 @@ namespace TemplatesPackage.Commands
         private void CreateRequestHandlerInNewFile(ProjectItems projectItems, CreateMessageModel model, string classTemplate)
         {
             var handlerProjectItem = projectItems.AddFromTemplate(classTemplate, $"{model.MessageHandlerName.FullName}");
-            var codeClass = handlerProjectItem.FindCodeClassByName(model.MessageHandlerName.Name);
-            AdjustRequestHandler(codeClass, model);
+            var handlerCodeClass = handlerProjectItem.FindCodeClassByName(model.MessageHandlerName.Name);
+            AdjustRequestHandler(handlerCodeClass, model);
         }
 
-        private void CreateRequestHandlerInExistingFile(CodeClass requestCodeClass, CreateMessageModel model)
+        private void CreateRequestHandlerInMessageFile(CodeClass messageCodeClass, CreateMessageModel model)
         {
-            var codeClass = requestCodeClass.Namespace.AddClass(model.MessageHandlerName.Name, -1, Access: vsCMAccess.vsCMAccessPublic);
-            AdjustRequestHandler(codeClass, model);
+            var handlerCodeClass = messageCodeClass.Namespace.AddClass(
+                Name: model.MessageHandlerName.Name, 
+                Position: -1, 
+                Access: vsCMAccess.vsCMAccessPublic);
+            AdjustRequestHandler(handlerCodeClass, model);
+        }
+
+        private void CreateRequestHandlerInMessageClass(CodeClass messageCodeClass, CreateMessageModel model)
+        {
+            var handlerCodeClass = messageCodeClass.AddClass(
+                Name: model.MessageHandlerName.Name,
+                Position: -1,
+                Access: vsCMAccess.vsCMAccessPublic
+            );
+            AdjustRequestHandler(handlerCodeClass, model);
         }
 
         private void AdjustRequestHandler(CodeClass codeClass, CreateMessageModel model)
         {
-            var fileCodeModel = (codeClass.Namespace.Parent as FileCodeModel2);
+            var fileCodeModel = codeClass.Namespace.Parent as FileCodeModel2;
             model.Imports
                 .ToList()
                 .ForEach(x => fileCodeModel?.AddImport(x));
@@ -273,7 +293,9 @@ namespace TemplatesPackage.Commands
                 {
                     fileCodeModel?.AddImport(import, -1);
                 }
-            } 
+            }
+
+            var indent = model.OneClassStyle ? "\t\t\t\t" : "\t\t\t";
 
             // add public access 
             codeClass.Access = vsCMAccess.vsCMAccessPublic;
@@ -300,7 +322,7 @@ namespace TemplatesPackage.Commands
             });
 
             var constructorEditPoit = constructor.GetStartPoint(vsCMPart.vsCMPartBody).CreateEditPoint();
-            constructorParams.ForEach(x => constructorEditPoit.Insert("\t\t\t" + "this." + x.Name + " = " + x.Name + ";" + Environment.NewLine));
+            constructorParams.ForEach(x => constructorEditPoit.Insert(indent + "this." + x.Name + " = " + x.Name + ";" + Environment.NewLine));
 
             // add handler
             var handler = codeClass.AddFunction(
@@ -316,7 +338,7 @@ namespace TemplatesPackage.Commands
             }
 
             handler.StartPoint.CreateEditPoint().ReplaceText(0, model.HandlerHandleAcces, (int)vsEPReplaceTextOptions.vsEPReplaceTextAutoformat);
-            handler.GetStartPoint(vsCMPart.vsCMPartBody).CreateEditPoint().Insert("\t\t\tthrow new NotImplementedException();");
+            handler.GetStartPoint(vsCMPart.vsCMPartBody).CreateEditPoint().Insert(indent + "throw new NotImplementedException();");
         }
 
         private void CreateViewModel(ProjectItems projectItems, CreateMessageModel model, string classTemplate)

@@ -202,6 +202,7 @@
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" Margin="0,0,0,5">
                 <Grid.ColumnDefinitions>
@@ -218,10 +219,10 @@
                       IsChecked="{Binding ShouldCreateValidationFile, Mode=TwoWay}"/>
             <CheckBox Grid.Row="3" Content="Message and handler in one file"
                       IsChecked="{Binding OneFileStyle, Mode=TwoWay}"/>
-            <!--Hide due to not implement behaviour-->
-            <!--<CheckBox Grid.Row="3" Content="Message and handler in one class"
+            <CheckBox Grid.Row="4" Content="Message and handler in one class"
                       IsChecked="{Binding OneClassStyle, Mode=TwoWay}" 
-                      IsEnabled="{Binding OneFileStyle}"/>-->
+                      IsEnabled="{Binding OneFileStyle}"
+                      Margin="20,0,0,0"/>
         </Grid>
 
         <Grid Grid.Row="5" Grid.Column="0" Margin="5">
