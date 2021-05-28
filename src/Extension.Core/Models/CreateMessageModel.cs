@@ -15,7 +15,7 @@ namespace Extension.Core.Models
         public FileNameInfo MessageHandlerName { get; set; }
         public FileNameInfo ResponseViewModelName { get; set; }
         public FileNameInfo ValidationFileName { get; set; }
-        public string PostfixValue { get; set; }
+        public string SuffixValue { get; set; }
 
 
         public MessageType MessageType { get; set; }

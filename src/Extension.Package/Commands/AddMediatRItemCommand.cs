@@ -121,13 +121,7 @@ namespace TemplatesPackage.Commands
                     var selectedItem = dte.SelectedItems.Item(1);
                     var project = null != selectedItem.Project ? selectedItem.Project : selectedItem.ProjectItem.ContainingProject;
 
-                    var storedSettings = new StoredUserSettings
-                    {
-                        InputFileName = settingsStore.GetDefaultFileNameByProject(project),
-                        Imports = settingsStore.GetImportsByProject(project).ToList(),
-                        ConstructorParameters = settingsStore.GetConstructorParametersByProject(project).ToList()
-                    };
-
+                    var storedSettings = GetUserSettings(project);
                     var window = new MediatrItemOptionsWindow(storedSettings);
                     var result = WindowHelper.ShowModal(window);
 
@@ -388,10 +382,30 @@ namespace TemplatesPackage.Commands
                 Access: vsCMAccess.vsCMAccessPublic);
         }
 
+        private StoredUserSettings GetUserSettings(Project project)
+        {
+            return new StoredUserSettings
+            {
+                InputFileName = settingsStore.GetDefaultFileNameByProject(project),
+                Imports = settingsStore.GetImportsByProject(project).ToList(),
+                ConstructorParameters = settingsStore.GetConstructorParametersByProject(project).ToList(),
+                ShouldCreateFolder = settingsStore.GetBooleanByProject(project, MediatRSettingsKey.ShouldCreateFolder, true),
+                ShouldCreateValidationFile = settingsStore.GetBooleanByProject(project, MediatRSettingsKey.ShouldCreateValidationFile),
+                OneFileStyle = settingsStore.GetBooleanByProject(project, MediatRSettingsKey.OneFileStyle),
+                OneClassStyle = settingsStore.GetBooleanByProject(project, MediatRSettingsKey.OneClassStyle)
+
+            };
+        }
+
         private void SaveUserSettigs(Project project, CreateMessageModel model)
         {
             settingsStore.SetImportsByProject(project, model.Imports);
             settingsStore.SetConstructorParametersByProject(project, model.ConstructorParameters);
+
+            settingsStore.SetBooleanByProject(project, MediatRSettingsKey.ShouldCreateFolder, model.ShouldCreateFolder);
+            settingsStore.SetBooleanByProject(project, MediatRSettingsKey.ShouldCreateValidationFile, model.ShouldCreateValidationFile);
+            settingsStore.SetBooleanByProject(project, MediatRSettingsKey.OneFileStyle, model.OneFileStyle);
+            settingsStore.SetBooleanByProject(project, MediatRSettingsKey.OneClassStyle, model.OneClassStyle);
         }
     }
 }

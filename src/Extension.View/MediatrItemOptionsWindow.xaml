@@ -3,7 +3,7 @@
                  xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  Title="MediatR Message Creation"
-                 Height="600"
+                 Height="630"
                  Width="700"
                  ResizeMode="NoResize"
                  TextOptions.TextFormattingMode="Display"
@@ -23,10 +23,13 @@
             <Setter Property="Width" Value="16"/>
             <Setter Property="Height" Value="16"/>
         </Style>
+
+        <Thickness x:Key="GridMargin" Top="3" Left="5" Right="5" Bottom ="3"></Thickness>
     </ui:DialogWindow.Resources>
 
     <Grid Background="White" Margin="5">
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
@@ -40,7 +43,7 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="5" Margin="5">
+        <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="5" Margin="{StaticResource GridMargin}">
             <GroupBox Header="Generating Files Preview" FontWeight="SemiBold">
                 <StackPanel Grid.Row="1" Orientation="Vertical"
                            VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5,0,0,0">
@@ -68,8 +71,8 @@
                 </StackPanel>
             </GroupBox>
         </Grid>
-        
-        <Grid Grid.Row="0" Grid.Column="0" Margin="5">
+
+        <Grid Grid.Row="0" Grid.Column="0" Margin="{StaticResource GridMargin}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="120"/>
                 <ColumnDefinition Width="*"/>
@@ -92,7 +95,7 @@
             </ComboBox>
         </Grid>
 
-        <Grid Grid.Row="1" Grid.Column="0" Margin="5">
+        <Grid Grid.Row="1" Grid.Column="0" Margin="{StaticResource GridMargin}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="120"/>
                 <ColumnDefinition Width="*"/>
@@ -115,7 +118,7 @@
             </ComboBox>
         </Grid>
 
-        <Grid Grid.Row="2" Grid.Column="0" Margin="5">
+        <Grid Grid.Row="2" Grid.Column="0" Margin="{StaticResource GridMargin}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
@@ -131,8 +134,8 @@
                 <Separator Grid.Column="1" VerticalAlignment="Center" Margin="5,0,0,0"/>
             </Grid>
             <ComboBox Grid.Row="1"
-                   ItemsSource="{Binding PostfixTypes}"
-                   SelectedItem="{Binding SelectedPostfixType}"
+                   ItemsSource="{Binding SuffixTypes}"
+                   SelectedItem="{Binding SelectedSuffixType}"
                    Style="{StaticResource DefaultLayout}"
                    VerticalContentAlignment="Center"
                    HorizontalAlignment="Left"
@@ -145,12 +148,12 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
             <TextBox Grid.Row="2"
-                     Text="{Binding InputPostfixValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     IsEnabled="{Binding IsCustomPostfix}"
+                     Text="{Binding InputSuffixValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     IsEnabled="{Binding IsCustomSuffix}"
                      Height="25" Width="200" Margin="0,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center"/>
         </Grid>
 
-        <Grid Grid.Row="3" Grid.Column="0" Margin="5">
+        <Grid Grid.Row="3" Grid.Column="0" Margin="{StaticResource GridMargin}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
@@ -196,7 +199,7 @@
             </TextBox>
         </Grid>
 
-        <Grid Grid.Row="4" Grid.Column="0" Margin="5">
+        <Grid Grid.Row="4" Grid.Column="0" Margin="{StaticResource GridMargin}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
@@ -209,7 +212,7 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0"  Content="Additional adjustments:"
+                <Label Grid.Column="0"  Content="Additional options:"
                    Style="{StaticResource DefaultLayout}" FontWeight="SemiBold" />
                 <Separator Grid.Column="1" VerticalAlignment="Center" Margin="5,0,0,0"/>
             </Grid>
@@ -225,7 +228,7 @@
                       Margin="20,0,0,0"/>
         </Grid>
 
-        <Grid Grid.Row="5" Grid.Column="0" Margin="5">
+        <Grid Grid.Row="5" Grid.Column="0" Margin="{StaticResource GridMargin}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
@@ -274,7 +277,7 @@
                      Style="{StaticResource DefaultLayout}" Height="100"/>
         </Grid>
 
-        <Grid Grid.Row="5" Grid.Column="1" Margin="5">
+        <Grid Grid.Row="5" Grid.Column="1" Margin="{StaticResource GridMargin}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
@@ -315,8 +318,14 @@
                      Style="{StaticResource DefaultLayout}"
                      Height="100"/>
         </Grid>
+
+        <Grid Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="{StaticResource GridMargin}">
+            <TextBlock Margin="20,0,0,0" Background="LightGray">
+                Note: additional options, imports, and constructor parameters are saved for a separate project.
+            </TextBlock>
+        </Grid>
         
-        <Grid Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2">
+        <Grid Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid HorizontalAlignment="Stretch" Height="50" VerticalAlignment="Bottom">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
