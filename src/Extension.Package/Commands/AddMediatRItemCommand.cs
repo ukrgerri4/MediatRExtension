@@ -203,6 +203,11 @@ namespace TemplatesPackage.Commands
                 CreateValidationFile(folderProjectItems, model, classTemplate);
             }
 
+            if (model.ShouldCreateAutomapperFile)
+            {
+                CreateAutoMapperProfile(folderProjectItems, model, classTemplate);
+            }
+
             proj.Save();
         }
 
@@ -354,11 +359,13 @@ namespace TemplatesPackage.Commands
 
             // add using to file
             var fileCodeModel = validationProjectItem.FileCodeModel as FileCodeModel2;
-            var imports = fileCodeModel.CodeElements.OfType<CodeImport>().Select(x => x).ToList();
-            foreach (var import in imports)
-            {
-                fileCodeModel.Remove(import);
-            }
+
+            //// remove all imports
+            //var imports = fileCodeModel.CodeElements.OfType<CodeImport>().Select(x => x).ToList();
+            //foreach (var import in imports)
+            //{
+            //    fileCodeModel.Remove(import);
+            //}
 
             foreach (var import in model.DefaultValidationImports)
             {
@@ -382,6 +389,38 @@ namespace TemplatesPackage.Commands
                 Access: vsCMAccess.vsCMAccessPublic);
         }
 
+        private void CreateAutoMapperProfile(ProjectItems projectItems, CreateMessageModel model, string classTemplate)
+        {
+            var automapperProfileProjectItem = projectItems.AddFromTemplate(classTemplate, $"{model.AutomapperFileName.FullName}");
+            var codeClass = automapperProfileProjectItem.FindCodeClassByName(model.AutomapperFileName.Name);
+
+            if (null == codeClass) { throw new ArgumentNullException(nameof(codeClass)); } // add message
+
+            // add using to file
+            var fileCodeModel = automapperProfileProjectItem.FileCodeModel as FileCodeModel2;
+
+            foreach (var import in model.DefaultAutoMapperImports)
+            {
+                fileCodeModel?.AddImport(import, 0);
+            }
+
+            // add public access
+            codeClass.Access = vsCMAccess.vsCMAccessPublic;
+
+            // add interface
+            var editPoint = codeClass.StartPoint.CreateEditPoint();
+            editPoint.EndOfLine();
+            editPoint.Insert(model.AutoMapperInterface);
+
+            // add constructor with params
+            var constructor = codeClass.AddFunction(
+                Name: codeClass.Name,
+                Kind: vsCMFunction.vsCMFunctionConstructor,
+                Type: vsCMTypeRef.vsCMTypeRefVoid,
+                Position: 0,
+                Access: vsCMAccess.vsCMAccessPublic);
+        }
+
         private StoredUserSettings GetUserSettings(Project project)
         {
             return new StoredUserSettings
@@ -391,6 +430,7 @@ namespace TemplatesPackage.Commands
                 ConstructorParameters = settingsStore.GetConstructorParametersByProject(project).ToList(),
                 ShouldCreateFolder = settingsStore.GetBooleanByProject(project, MediatRSettingsKey.ShouldCreateFolder, true),
                 ShouldCreateValidationFile = settingsStore.GetBooleanByProject(project, MediatRSettingsKey.ShouldCreateValidationFile),
+                ShouldCreateAutomapperFile = settingsStore.GetBooleanByProject(project, MediatRSettingsKey.ShouldCreateAutomapperFile),
                 OneFileStyle = settingsStore.GetBooleanByProject(project, MediatRSettingsKey.OneFileStyle),
                 OneClassStyle = settingsStore.GetBooleanByProject(project, MediatRSettingsKey.OneClassStyle)
 
@@ -404,6 +444,7 @@ namespace TemplatesPackage.Commands
 
             settingsStore.SetBooleanByProject(project, MediatRSettingsKey.ShouldCreateFolder, model.ShouldCreateFolder);
             settingsStore.SetBooleanByProject(project, MediatRSettingsKey.ShouldCreateValidationFile, model.ShouldCreateValidationFile);
+            settingsStore.SetBooleanByProject(project, MediatRSettingsKey.ShouldCreateAutomapperFile, model.ShouldCreateAutomapperFile);
             settingsStore.SetBooleanByProject(project, MediatRSettingsKey.OneFileStyle, model.OneFileStyle);
             settingsStore.SetBooleanByProject(project, MediatRSettingsKey.OneClassStyle, model.OneClassStyle);
         }

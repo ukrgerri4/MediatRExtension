@@ -67,7 +67,10 @@
                         <Image Source="Assets/CSharp.png" Style="{StaticResource IconStyle}"/>
                         <TextBlock Text="{Binding ValidatorFileName}"/>
                     </StackPanel>
-                    
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding AutomapperFileVisibility}" Margin="10,0,0,0">
+                        <Image Source="Assets/CSharp.png" Style="{StaticResource IconStyle}"/>
+                        <TextBlock Text="{Binding AutomapperFileName}"/>
+                    </StackPanel>
                 </StackPanel>
             </GroupBox>
         </Grid>
@@ -206,6 +209,7 @@
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" Margin="0,0,0,5">
                 <Grid.ColumnDefinitions>
@@ -218,11 +222,13 @@
             </Grid>
             <CheckBox Grid.Row="1" Content="Create folder"
                       IsChecked="{Binding ShouldCreateFolder, Mode=TwoWay}"/>
-            <CheckBox Grid.Row="2" Content="Create validation file"
+            <CheckBox Grid.Row="2" Content="Create validator"
                       IsChecked="{Binding ShouldCreateValidationFile, Mode=TwoWay}"/>
-            <CheckBox Grid.Row="3" Content="Message and handler in one file"
+            <CheckBox Grid.Row="3" Content="Create automapper profile"
+                      IsChecked="{Binding ShouldCreateAutomapperFile, Mode=TwoWay}"/>
+            <CheckBox Grid.Row="4" Content="Message and handler in one file"
                       IsChecked="{Binding OneFileStyle, Mode=TwoWay}"/>
-            <CheckBox Grid.Row="4" Content="Message and handler in one class"
+            <CheckBox Grid.Row="5" Content="Message and handler in one class"
                       IsChecked="{Binding OneClassStyle, Mode=TwoWay}" 
                       IsEnabled="{Binding OneFileStyle}"
                       Margin="20,0,0,0"/>

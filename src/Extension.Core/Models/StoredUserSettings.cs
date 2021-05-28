@@ -12,6 +12,7 @@ namespace Extension.Core.Models
         // adjustments
         public bool ShouldCreateFolder { get; set; }
         public bool ShouldCreateValidationFile { get; set; }
+        public bool ShouldCreateAutomapperFile { get; set; }
         public bool OneFileStyle { get; set; }
         public bool OneClassStyle { get; set; }
 

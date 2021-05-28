@@ -33,6 +33,7 @@ namespace Extension.View
                 OnPropertyChanged(nameof(MessageName));
                 OnPropertyChanged(nameof(MessageHandlerName));
                 OnPropertyChanged(nameof(ValidatorFileName));
+                OnPropertyChanged(nameof(AutomapperFileName));
                 OnPropertyChanged(nameof(IsFormValid));
 
 
@@ -214,6 +215,18 @@ namespace Extension.View
             }
         }
 
+        private bool _shouldCreateAutomapperFile;
+        public bool ShouldCreateAutomapperFile
+        {
+            get => _shouldCreateAutomapperFile;
+            set
+            {
+                _shouldCreateAutomapperFile = value;
+                OnPropertyChanged(nameof(ShouldCreateAutomapperFile));
+                OnPropertyChanged(nameof(AutomapperFileVisibility));
+            }
+        }
+
         private bool _oneFileStyle;
         public bool OneFileStyle
         {
@@ -246,6 +259,9 @@ namespace Extension.View
 
         public string ValidatorFileName => $"{InputFileName}{InputSuffixValue}Validator.cs";
         public string ValidatorFileVisibility => ShouldCreateValidationFile ? Visibility.Visible.ToString() : Visibility.Collapsed.ToString();
+
+        public string AutomapperFileName => $"{InputFileName}Profile.cs";
+        public string AutomapperFileVisibility => ShouldCreateAutomapperFile ? Visibility.Visible.ToString() : Visibility.Collapsed.ToString();
 
         #endregion
 
@@ -304,6 +320,7 @@ namespace Extension.View
 
             ShouldCreateFolder = settings.ShouldCreateFolder;
             ShouldCreateValidationFile = settings.ShouldCreateValidationFile;
+            ShouldCreateAutomapperFile = settings.ShouldCreateAutomapperFile;
             OneFileStyle = settings.OneFileStyle;
             OneClassStyle = settings.OneClassStyle;
 
@@ -345,6 +362,7 @@ namespace Extension.View
                 MessageHandlerName = new FileNameInfo(MessageHandlerName),
                 ResponseViewModelName = new FileNameInfo(ResponseViewModelName),
                 ValidationFileName = new FileNameInfo(ValidatorFileName),
+                AutomapperFileName = new FileNameInfo(AutomapperFileName),
                 SuffixValue = InputSuffixValue,
                 
                 MessageType = SelectedMessageType.Value,
@@ -356,6 +374,7 @@ namespace Extension.View
 
                 ShouldCreateFolder = ShouldCreateFolder,
                 ShouldCreateValidationFile = ShouldCreateValidationFile,
+                ShouldCreateAutomapperFile = ShouldCreateAutomapperFile,
                 OneClassStyle = OneClassStyle,
                 OneFileStyle = OneFileStyle
             };

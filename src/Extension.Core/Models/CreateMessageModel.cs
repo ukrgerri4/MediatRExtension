@@ -15,6 +15,8 @@ namespace Extension.Core.Models
         public FileNameInfo MessageHandlerName { get; set; }
         public FileNameInfo ResponseViewModelName { get; set; }
         public FileNameInfo ValidationFileName { get; set; }
+        public FileNameInfo AutomapperFileName { get; set; }
+        
         public string SuffixValue { get; set; }
 
 
@@ -25,6 +27,7 @@ namespace Extension.Core.Models
         
         public bool ShouldCreateFolder { get; set; }
         public bool ShouldCreateValidationFile { get; set; }
+        public bool ShouldCreateAutomapperFile { get; set; }
         public bool OneFileStyle { get; set; }
         public bool OneClassStyle { get; set; }
 
@@ -74,6 +77,7 @@ namespace Extension.Core.Models
         }
 
         public string ValidationInterface => $" : AbstractValidator<{MessageName.Name}>";
+        public string AutoMapperInterface => " : Profile";
 
         public string HandlerHandleAcces
         {
@@ -126,6 +130,7 @@ namespace Extension.Core.Models
         }
 
         public string[] DefaultValidationImports => new string[] { "FluentValidation" };
+        public string[] DefaultAutoMapperImports => new string[] { "AutoMapper" };
 
         public IEnumerable<string> Imports
         {
