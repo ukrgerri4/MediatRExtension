@@ -32,6 +32,8 @@ namespace Extension.View
                 OnPropertyChanged(nameof(FolderName));
                 OnPropertyChanged(nameof(MessageName));
                 OnPropertyChanged(nameof(MessageHandlerName));
+                OnPropertyChanged(nameof(ValidatorFileName));
+                OnPropertyChanged(nameof(AutomapperFileName));
                 OnPropertyChanged(nameof(IsFormValid));
 
 
@@ -73,9 +75,9 @@ namespace Extension.View
                         break;
                 }
 
-                if (SelectedPostfixType?.Value == PostfixType.Default)
+                if (SelectedSuffixType?.Value == SuffixType.Default)
                 {
-                    InputPostfixValue = _selectedMessageType.Name;
+                    InputSuffixValue = _selectedMessageType.Name;
                 }
 
                 OnPropertyChanged(nameof(IsResponseTypeComboBoxEnabled));
@@ -96,45 +98,46 @@ namespace Extension.View
 
         #endregion
 
-        #region PostfixType Properties
+        #region SuffixType Properties
 
-        public NameValue<PostfixType>[] PostfixTypes { get; set; }
-        private NameValue<PostfixType> _selectedPostfixType;
+        public NameValue<SuffixType>[] SuffixTypes { get; set; }
+        private NameValue<SuffixType> _selectedSuffixType;
 
-        public NameValue<PostfixType> SelectedPostfixType
+        public NameValue<SuffixType> SelectedSuffixType
         {
-            get => _selectedPostfixType;
+            get => _selectedSuffixType;
             set
             {
-                _selectedPostfixType = value;
-                switch (_selectedPostfixType.Value)
+                _selectedSuffixType = value;
+                switch (_selectedSuffixType.Value)
                 {
-                    case PostfixType.Default:
-                        InputPostfixValue = SelectedMessageType?.Name ?? string.Empty;
+                    case SuffixType.Default:
+                        InputSuffixValue = SelectedMessageType?.Name ?? string.Empty;
                         break;
-                    case PostfixType.None:
-                        InputPostfixValue = string.Empty;
+                    case SuffixType.None:
+                        InputSuffixValue = string.Empty;
                         break;
-                    case PostfixType.Custom:
+                    case SuffixType.Custom:
                         break;
                 }
-                OnPropertyChanged(nameof(IsCustomPostfix));
+                OnPropertyChanged(nameof(IsCustomSuffix));
             }
         }
 
-        public bool IsCustomPostfix => SelectedPostfixType?.Value == PostfixType.Custom;
+        public bool IsCustomSuffix => SelectedSuffixType?.Value == SuffixType.Custom;
 
-        private string _inputPostfixValue;
-        public string InputPostfixValue
+        private string _inputSuffixValue;
+        public string InputSuffixValue
         {
-            get => _inputPostfixValue;
+            get => _inputSuffixValue;
             set
             {
-                _inputPostfixValue = value;
-                OnPropertyChanged(nameof(InputPostfixValue));
+                _inputSuffixValue = value;
+                OnPropertyChanged(nameof(InputSuffixValue));
                 OnPropertyChanged(nameof(FolderName));
                 OnPropertyChanged(nameof(MessageName));
                 OnPropertyChanged(nameof(MessageHandlerName));
+                OnPropertyChanged(nameof(ValidatorFileName));
                 OnPropertyChanged(nameof(InputReturnValue));
                 OnPropertyChanged(nameof(IsFormValid));
             }
@@ -188,6 +191,7 @@ namespace Extension.View
         public string UsingItems { get; set; }
         public string ConstructorItems { get; set; }
 
+        #region Additional options
         private bool _shouldCreateFolder;
         public bool ShouldCreateFolder
         {
@@ -196,6 +200,30 @@ namespace Extension.View
             {
                 _shouldCreateFolder = value;
                 OnPropertyChanged(nameof(FolderVisibility));
+            }
+        }
+
+        private bool _shouldCreateValidationFile;
+        public bool ShouldCreateValidationFile
+        {
+            get => _shouldCreateValidationFile;
+            set
+            {
+                _shouldCreateValidationFile = value;
+                OnPropertyChanged(nameof(ShouldCreateValidationFile));
+                OnPropertyChanged(nameof(ValidatorFileVisibility));
+            }
+        }
+
+        private bool _shouldCreateAutomapperFile;
+        public bool ShouldCreateAutomapperFile
+        {
+            get => _shouldCreateAutomapperFile;
+            set
+            {
+                _shouldCreateAutomapperFile = value;
+                OnPropertyChanged(nameof(ShouldCreateAutomapperFile));
+                OnPropertyChanged(nameof(AutomapperFileVisibility));
             }
         }
 
@@ -210,15 +238,17 @@ namespace Extension.View
                 OnPropertyChanged(nameof(MessageHandlerNameVisibility));
             }
         }
+
         public bool OneClassStyle { get; set; }
+        #endregion
 
         #region Preview Properties
         public string FolderName => InputFileName;
         public string FolderVisibility => ShouldCreateFolder ? Visibility.Visible.ToString() : Visibility.Collapsed.ToString();
         
-        public string MessageName => $"{InputFileName}{InputPostfixValue}.cs";
+        public string MessageName => $"{InputFileName}{InputSuffixValue}.cs";
         
-        public string MessageHandlerName => $"{InputFileName}{InputPostfixValue}Handler.cs";
+        public string MessageHandlerName => $"{InputFileName}{InputSuffixValue}Handler.cs";
         public string MessageHandlerNameVisibility => OneFileStyle ? Visibility.Collapsed.ToString() : Visibility.Visible.ToString();
 
         public string ResponseViewModelName => $"{InputReturnValue}.cs";
@@ -226,6 +256,13 @@ namespace Extension.View
             SelectedResponseType?.Value == ResponseType.NewItem
                 ? Visibility.Visible.ToString()
                 : Visibility.Collapsed.ToString();
+
+        public string ValidatorFileName => $"{InputFileName}{InputSuffixValue}Validator.cs";
+        public string ValidatorFileVisibility => ShouldCreateValidationFile ? Visibility.Visible.ToString() : Visibility.Collapsed.ToString();
+
+        public string AutomapperFileName => $"{InputFileName}Profile.cs";
+        public string AutomapperFileVisibility => ShouldCreateAutomapperFile ? Visibility.Visible.ToString() : Visibility.Collapsed.ToString();
+
         #endregion
 
         #region Validation
@@ -271,9 +308,9 @@ namespace Extension.View
             MessageTypes = Enums.ToNameValues<MessageType>().ToArray();
             SelectedMessageType = MessageTypes.First(x => x.Value == MessageType.Command);
 
-            InputPostfixValue = string.Empty;
-            PostfixTypes = Enums.ToNameValues<PostfixType>().ToArray();
-            SelectedPostfixType = PostfixTypes.First(x => x.Value == PostfixType.Default);
+            InputSuffixValue = string.Empty;
+            SuffixTypes = Enums.ToNameValues<SuffixType>().ToArray();
+            SelectedSuffixType = SuffixTypes.First(x => x.Value == SuffixType.Default);
 
             ProcessingTypes = Enums.ToNameValues<ProcessingType>().ToArray();
             SelectedProcessingType = ProcessingTypes.First(x => x.Value == ProcessingType.Async);
@@ -281,9 +318,11 @@ namespace Extension.View
             ResponseTypes = Enums.ToNameValues<ResponseType>().ToArray();
             SelectedResponseType = ResponseTypes.First(x => x.Value == ResponseType.None);
 
-            ShouldCreateFolder = true;
-            OneFileStyle = false;
-            OneClassStyle = false;
+            ShouldCreateFolder = settings.ShouldCreateFolder;
+            ShouldCreateValidationFile = settings.ShouldCreateValidationFile;
+            ShouldCreateAutomapperFile = settings.ShouldCreateAutomapperFile;
+            OneFileStyle = settings.OneFileStyle;
+            OneClassStyle = settings.OneClassStyle;
 
             UsingItems = string.Join(Environment.NewLine, settings.Imports);
             ConstructorItems = string.Join(Environment.NewLine, settings.ConstructorParameters.Select(x => $"{x.Type} {x.Name}"));
@@ -322,7 +361,9 @@ namespace Extension.View
                 MessageName = new FileNameInfo(MessageName),
                 MessageHandlerName = new FileNameInfo(MessageHandlerName),
                 ResponseViewModelName = new FileNameInfo(ResponseViewModelName),
-                PostfixValue = InputPostfixValue,
+                ValidationFileName = new FileNameInfo(ValidatorFileName),
+                AutomapperFileName = new FileNameInfo(AutomapperFileName),
+                SuffixValue = InputSuffixValue,
                 
                 MessageType = SelectedMessageType.Value,
                 ProcessingType = SelectedProcessingType.Value,
@@ -332,6 +373,8 @@ namespace Extension.View
                 ConstructorItems = ConstructorItems,
 
                 ShouldCreateFolder = ShouldCreateFolder,
+                ShouldCreateValidationFile = ShouldCreateValidationFile,
+                ShouldCreateAutomapperFile = ShouldCreateAutomapperFile,
                 OneClassStyle = OneClassStyle,
                 OneFileStyle = OneFileStyle
             };

@@ -121,13 +121,7 @@ namespace TemplatesPackage.Commands
                     var selectedItem = dte.SelectedItems.Item(1);
                     var project = null != selectedItem.Project ? selectedItem.Project : selectedItem.ProjectItem.ContainingProject;
 
-                    var storedSettings = new StoredUserSettings
-                    {
-                        InputFileName = settingsStore.GetDefaultFileNameByProject(project),
-                        Imports = settingsStore.GetImportsByProject(project).ToList(),
-                        ConstructorParameters = settingsStore.GetConstructorParametersByProject(project).ToList()
-                    };
-
+                    var storedSettings = GetUserSettings(project);
                     var window = new MediatrItemOptionsWindow(storedSettings);
                     var result = WindowHelper.ShowModal(window);
 
@@ -188,7 +182,14 @@ namespace TemplatesPackage.Commands
 
             if (model.OneFileStyle)
             {
-                CreateRequestHandlerInExistingFile(codeClass, model);
+                if (model.OneClassStyle)
+                {
+                    CreateRequestHandlerInMessageClass(codeClass, model);
+                }
+                else
+                {
+                    CreateRequestHandlerInMessageFile(codeClass, model);
+                }
             }
             else
             {
@@ -196,6 +197,16 @@ namespace TemplatesPackage.Commands
             }
 
             CreateViewModel(folderProjectItems, model, classTemplate);
+
+            if (model.ShouldCreateValidationFile)
+            {
+                CreateValidationFile(folderProjectItems, model, classTemplate);
+            }
+
+            if (model.ShouldCreateAutomapperFile)
+            {
+                CreateAutoMapperProfile(folderProjectItems, model, classTemplate);
+            }
 
             proj.Save();
         }
@@ -244,19 +255,32 @@ namespace TemplatesPackage.Commands
         private void CreateRequestHandlerInNewFile(ProjectItems projectItems, CreateMessageModel model, string classTemplate)
         {
             var handlerProjectItem = projectItems.AddFromTemplate(classTemplate, $"{model.MessageHandlerName.FullName}");
-            var codeClass = handlerProjectItem.FindCodeClassByName(model.MessageHandlerName.Name);
-            AdjustRequestHandler(codeClass, model);
+            var handlerCodeClass = handlerProjectItem.FindCodeClassByName(model.MessageHandlerName.Name);
+            AdjustRequestHandler(handlerCodeClass, model);
         }
 
-        private void CreateRequestHandlerInExistingFile(CodeClass requestCodeClass, CreateMessageModel model)
+        private void CreateRequestHandlerInMessageFile(CodeClass messageCodeClass, CreateMessageModel model)
         {
-            var codeClass = requestCodeClass.Namespace.AddClass(model.MessageHandlerName.Name, -1, Access: vsCMAccess.vsCMAccessPublic);
-            AdjustRequestHandler(codeClass, model);
+            var handlerCodeClass = messageCodeClass.Namespace.AddClass(
+                Name: model.MessageHandlerName.Name, 
+                Position: -1, 
+                Access: vsCMAccess.vsCMAccessPublic);
+            AdjustRequestHandler(handlerCodeClass, model);
+        }
+
+        private void CreateRequestHandlerInMessageClass(CodeClass messageCodeClass, CreateMessageModel model)
+        {
+            var handlerCodeClass = messageCodeClass.AddClass(
+                Name: model.MessageHandlerName.Name,
+                Position: -1,
+                Access: vsCMAccess.vsCMAccessPublic
+            );
+            AdjustRequestHandler(handlerCodeClass, model);
         }
 
         private void AdjustRequestHandler(CodeClass codeClass, CreateMessageModel model)
         {
-            var fileCodeModel = (codeClass.Namespace.Parent as FileCodeModel2);
+            var fileCodeModel = codeClass.Namespace.Parent as FileCodeModel2;
             model.Imports
                 .ToList()
                 .ForEach(x => fileCodeModel?.AddImport(x));
@@ -268,7 +292,9 @@ namespace TemplatesPackage.Commands
                 {
                     fileCodeModel?.AddImport(import, -1);
                 }
-            } 
+            }
+
+            var indent = model.OneClassStyle ? "\t\t\t\t" : "\t\t\t";
 
             // add public access 
             codeClass.Access = vsCMAccess.vsCMAccessPublic;
@@ -295,7 +321,7 @@ namespace TemplatesPackage.Commands
             });
 
             var constructorEditPoit = constructor.GetStartPoint(vsCMPart.vsCMPartBody).CreateEditPoint();
-            constructorParams.ForEach(x => constructorEditPoit.Insert("\t\t\t" + "this." + x.Name + " = " + x.Name + ";" + Environment.NewLine));
+            constructorParams.ForEach(x => constructorEditPoit.Insert(indent + "this." + x.Name + " = " + x.Name + ";" + Environment.NewLine));
 
             // add handler
             var handler = codeClass.AddFunction(
@@ -311,7 +337,7 @@ namespace TemplatesPackage.Commands
             }
 
             handler.StartPoint.CreateEditPoint().ReplaceText(0, model.HandlerHandleAcces, (int)vsEPReplaceTextOptions.vsEPReplaceTextAutoformat);
-            handler.GetStartPoint(vsCMPart.vsCMPartBody).CreateEditPoint().Insert("\t\t\tthrow new NotImplementedException();");
+            handler.GetStartPoint(vsCMPart.vsCMPartBody).CreateEditPoint().Insert(indent + "throw new NotImplementedException();");
         }
 
         private void CreateViewModel(ProjectItems projectItems, CreateMessageModel model, string classTemplate)
@@ -324,10 +350,103 @@ namespace TemplatesPackage.Commands
             }
         }
 
+        private void CreateValidationFile(ProjectItems projectItems, CreateMessageModel model, string classTemplate)
+        {
+            var validationProjectItem = projectItems.AddFromTemplate(classTemplate, $"{model.ValidationFileName.FullName}");
+            var codeClass = validationProjectItem.FindCodeClassByName(model.ValidationFileName.Name);
+
+            if (null == codeClass) { throw new ArgumentNullException(nameof(codeClass)); } // add message
+
+            // add using to file
+            var fileCodeModel = validationProjectItem.FileCodeModel as FileCodeModel2;
+
+            //// remove all imports
+            //var imports = fileCodeModel.CodeElements.OfType<CodeImport>().Select(x => x).ToList();
+            //foreach (var import in imports)
+            //{
+            //    fileCodeModel.Remove(import);
+            //}
+
+            foreach (var import in model.DefaultValidationImports)
+            {
+                fileCodeModel?.AddImport(import, 0);
+            }
+
+            // add public access
+            codeClass.Access = vsCMAccess.vsCMAccessPublic;
+
+            // add interface
+            var editPoint = codeClass.StartPoint.CreateEditPoint();
+            editPoint.EndOfLine();
+            editPoint.Insert(model.ValidationInterface);
+
+            // add constructor with params
+            var constructor = codeClass.AddFunction(
+                Name: codeClass.Name,
+                Kind: vsCMFunction.vsCMFunctionConstructor,
+                Type: vsCMTypeRef.vsCMTypeRefVoid,
+                Position: 0,
+                Access: vsCMAccess.vsCMAccessPublic);
+        }
+
+        private void CreateAutoMapperProfile(ProjectItems projectItems, CreateMessageModel model, string classTemplate)
+        {
+            var automapperProfileProjectItem = projectItems.AddFromTemplate(classTemplate, $"{model.AutomapperFileName.FullName}");
+            var codeClass = automapperProfileProjectItem.FindCodeClassByName(model.AutomapperFileName.Name);
+
+            if (null == codeClass) { throw new ArgumentNullException(nameof(codeClass)); } // add message
+
+            // add using to file
+            var fileCodeModel = automapperProfileProjectItem.FileCodeModel as FileCodeModel2;
+
+            foreach (var import in model.DefaultAutoMapperImports)
+            {
+                fileCodeModel?.AddImport(import, 0);
+            }
+
+            // add public access
+            codeClass.Access = vsCMAccess.vsCMAccessPublic;
+
+            // add interface
+            var editPoint = codeClass.StartPoint.CreateEditPoint();
+            editPoint.EndOfLine();
+            editPoint.Insert(model.AutoMapperInterface);
+
+            // add constructor with params
+            var constructor = codeClass.AddFunction(
+                Name: codeClass.Name,
+                Kind: vsCMFunction.vsCMFunctionConstructor,
+                Type: vsCMTypeRef.vsCMTypeRefVoid,
+                Position: 0,
+                Access: vsCMAccess.vsCMAccessPublic);
+        }
+
+        private StoredUserSettings GetUserSettings(Project project)
+        {
+            return new StoredUserSettings
+            {
+                InputFileName = settingsStore.GetDefaultFileNameByProject(project),
+                Imports = settingsStore.GetImportsByProject(project).ToList(),
+                ConstructorParameters = settingsStore.GetConstructorParametersByProject(project).ToList(),
+                ShouldCreateFolder = settingsStore.GetBooleanByProject(project, MediatRSettingsKey.ShouldCreateFolder, true),
+                ShouldCreateValidationFile = settingsStore.GetBooleanByProject(project, MediatRSettingsKey.ShouldCreateValidationFile),
+                ShouldCreateAutomapperFile = settingsStore.GetBooleanByProject(project, MediatRSettingsKey.ShouldCreateAutomapperFile),
+                OneFileStyle = settingsStore.GetBooleanByProject(project, MediatRSettingsKey.OneFileStyle),
+                OneClassStyle = settingsStore.GetBooleanByProject(project, MediatRSettingsKey.OneClassStyle)
+
+            };
+        }
+
         private void SaveUserSettigs(Project project, CreateMessageModel model)
         {
             settingsStore.SetImportsByProject(project, model.Imports);
             settingsStore.SetConstructorParametersByProject(project, model.ConstructorParameters);
+
+            settingsStore.SetBooleanByProject(project, MediatRSettingsKey.ShouldCreateFolder, model.ShouldCreateFolder);
+            settingsStore.SetBooleanByProject(project, MediatRSettingsKey.ShouldCreateValidationFile, model.ShouldCreateValidationFile);
+            settingsStore.SetBooleanByProject(project, MediatRSettingsKey.ShouldCreateAutomapperFile, model.ShouldCreateAutomapperFile);
+            settingsStore.SetBooleanByProject(project, MediatRSettingsKey.OneFileStyle, model.OneFileStyle);
+            settingsStore.SetBooleanByProject(project, MediatRSettingsKey.OneClassStyle, model.OneClassStyle);
         }
     }
 }

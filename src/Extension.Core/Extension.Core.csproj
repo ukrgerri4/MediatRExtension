@@ -41,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Definitions\PostfixType.cs" />
+    <Compile Include="Definitions\SuffixType.cs" />
     <Compile Include="Definitions\ProcessingType.cs" />
     <Compile Include="Definitions\MessageType.cs" />
     <Compile Include="Definitions\ResponseType.cs" />

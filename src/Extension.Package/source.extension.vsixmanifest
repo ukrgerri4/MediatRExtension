@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="MediatRExtension.4b52dd87-30d4-4caa-add0-ed5726a5af90" Version="1.0" Language="en-US" Publisher="ukrgerri4" />
+        <Identity Id="MediatRExtension.4b52dd87-30d4-4caa-add0-ed5726a5af90" Version="1.1" Language="en-US" Publisher="ukrgerri4" />
         <DisplayName>MediatR Extension For Create Messages</DisplayName>
         <Description xml:space="preserve">The MediatR Extension contains customizable UI helps create messages for the MediatR C# library.</Description>
         <MoreInfo>https://github.com/ukrgerri4/MediatRExtension</MoreInfo>
         <License>License\License.txt</License>
+        <ReleaseNotes>_documentation\release_notes_1.1.txt</ReleaseNotes>
         <Icon>Assets\MediatR.ico</Icon>
-        <Tags>mediatr, mediatr extension, mediatr template, extension template, extension, template</Tags>
+        <Tags>mediatr, mediatr extension, c#, mediatr template, extension, template</Tags>
+        <Preview>true</Preview>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0, 17.0)" />
