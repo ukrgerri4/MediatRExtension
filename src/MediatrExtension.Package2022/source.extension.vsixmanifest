@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+    <Metadata>
+        <Identity Id="MediatRExtension.8f6ad0b7-c333-4ded-80ae-446d2c0044a8" Version="1.2" Language="en-US" Publisher="ukrgerri4" />
+        <DisplayName>MediatR Extension 2022</DisplayName>
+        <Description xml:space="preserve">The MediatR Extension contains customizable UI helps create messages for the MediatR C# library.</Description>
+        <MoreInfo>https://github.com/ukrgerri4/MediatRExtension</MoreInfo>
+        <License>License.txt</License>
+        <ReleaseNotes>ReleaseNotes.txt</ReleaseNotes>
+        <Icon>MediatR.ico</Icon>
+        <Tags>mediatr, mediatr extension, c#, mediatr template, extension, template</Tags>
+        <Preview>true</Preview>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+    </Installation>
+    <Dependencies>
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+    </Dependencies>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />
+    </Prerequisites>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    </Assets>
+</PackageManifest>

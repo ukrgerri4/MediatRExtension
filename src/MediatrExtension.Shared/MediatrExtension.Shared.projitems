@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>e6b4ed27-7500-426a-85e5-798dbeb1cbe6</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>MediatrExtension.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="$(MSBuildThisFileDirectory)Assets\CSharp.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="$(MSBuildThisFileDirectory)Assets\Folder_16x.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\AddMediatRItemCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Decorators\DteWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\CodeClassExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\FileCodeModel2Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ProjectItemsExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MediatRTemplatesPackage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\MediatRSettingsStoreManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)View\MediatrMessageSettingsWindow.xaml.cs">
+      <DependentUpon>MediatrMessageSettingsWindow.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)View\MediatrMessageSettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+</Project>

@@ -1,4 +1,0 @@
-﻿ - additional options, imports and constructor parameters are saved for a separate project
- - added optional validation file creation
- - added optional automapper file creation
- - added optional single class messsage\handler style
