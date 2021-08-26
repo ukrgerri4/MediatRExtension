@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="MediatRExtension.4b52dd87-30d4-4caa-add0-ed5726a5af90" Version="1.1" Language="en-US" Publisher="ukrgerri4" />
-        <DisplayName>MediatR Extension For Create Messages 2019</DisplayName>
+        <Identity Id="MediatRExtension.4b52dd87-30d4-4caa-add0-ed5726a5af90" Version="1.2" Language="en-US" Publisher="ukrgerri4" />
+        <DisplayName>MediatR Extension 2019</DisplayName>
         <Description xml:space="preserve">The MediatR Extension contains customizable UI helps create messages for the MediatR C# library.</Description>
         <MoreInfo>https://github.com/ukrgerri4/MediatRExtension</MoreInfo>
         <License>License.txt</License>
