@@ -16,6 +16,10 @@ Libraries to install:
 
 ## Release Notes
 
+**v 1.2:**
+ - minor improvements
+ - created separate solution for VS 2022
+
 **v 1.1:**
  - additional options, imports and constructor parameters are saved for a separate project
  - added optional validation file creation
